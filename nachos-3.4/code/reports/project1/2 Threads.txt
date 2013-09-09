@@ -1,0 +1,24 @@
+
+*** thread 1 sees value 0
+*** thread 2 sees value 0
+*** thread 1 sees value 1
+*** thread 2 sees value 1
+*** thread 1 sees value 2
+*** thread 2 sees value 2
+*** thread 1 sees value 3
+*** thread 2 sees value 3
+*** thread 1 sees value 4
+*** thread 2 sees value 4
+Thread 1 sees final value 5
+Thread 2 sees final value 5
+No threads ready or runnable, and no pending interrupts.
+Assuming the program completed.
+Machine halting!
+
+Ticks: total 250, idle 0, system 250, user 0
+Disk I/O: reads 0, writes 0
+Console I/O: reads 0, writes 0
+Paging: faults 0
+Network I/O: packets received 0, sent 0
+
+Cleaning up...

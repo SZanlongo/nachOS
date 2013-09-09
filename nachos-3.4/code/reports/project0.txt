@@ -1,0 +1,20 @@
+Team Members:
+Jason Allen: 1661618
+Francisco Montas: 2112192
+Sebastian Zanlongo: 2820526
+
+
+Report
+
+a. Nachos Installation experience:
+	As a team we where able to successfully install Nachos with only a few issues. For one getting 	the compressed file to ocelot.aul.fiu.edu was a bit of 	      a hurdle since the ftp server is not listed on the project setup. In addition an adjustment to the make-file in the test folder was necessary if the 
+	nacho3.4/ folder is not in located in the home directory.
+
+b. Testing Experience:
+	All the test ran successfully and displayed the correct data after the installation was completed. The messages displayed when running the test were 
+	helpful since debugging errors should be facilitated by the statistics displayed at each run.
+
+c. Thread Class:
+	The Thread class in Nachos represents a single thread of execution, providing options to temporarily yield CPU time to a waiting thread, sleep (stay 
+	idle for a finite amount of time), finish, and identify the thread's currently status (just created, running, ready to run, and blocked). It maintains 	      a fixed stack size and the state of all the CPU registers. If the "User 	Program" module is set, the thread has its own address space and maintains 
+	an additional set of CPU registers, to distinguish between the state of kernel versus user code. Lastly, there is a global function that performs the 	      actual context switching from one executing thread to another.
