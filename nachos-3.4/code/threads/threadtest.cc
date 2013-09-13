@@ -33,7 +33,7 @@ SimpleThread(int which)
 {
 	int num, val;
 	if(sem == NULL) {
-		sem = new Semaphore("mySem", 1)
+		sem = new Semaphore("mySem", 1);
 	}
 	for (num = 0; num < 5; num++) {
 		sem -> P();
@@ -94,8 +94,8 @@ void ThreadTest(int n)
 {
 	for(int i = 0; i < n; i++)
 	{
-		Thread *t = new Thread("new forked thread");
-		t -> Fork(SimpleThread, i + 1);
+		Thread *thread = new Thread("new forked thread");
+		thread -> Fork(SimpleThread, i + 1);
 	}
 }
 #endif
