@@ -90,6 +90,7 @@ void ThreadTest() {
 }
 
 #if defined(CHANGED) && defined(THREADS)
+//Fork  n  new threads instead of just one
 void ThreadTest(int n)
 {
 	for(int i = 0; i < n; i++)

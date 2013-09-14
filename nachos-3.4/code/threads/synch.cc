@@ -25,6 +25,37 @@
 #include "synch.h"
 #include "system.h"
 
+#if defined(CHANGED)  && defined(HW1_LOCKS)
+//This constructor function initializes a lock object.
+/*
+ * The  debugName  argument is a string supplied by the caller, which should just be stored into the 
+ * new  Lock structure. Its purpose is simply to help distinguish various instances of locks in 
+ * debugging printout.
+ */
+Lock::Lock(char* debugName)
+{
+	name = debugName;
+    value = initialValue;
+    queue = new List;
+}
+
+//This function deallocates a lock object, when it is no longer needed.
+Lock::~Lock()
+{
+	delete queue;	
+}
+
+//This function waits for a lock to become free and then acquires the lock for the current thread.
+void Lock::Acquire()
+{
+}
+
+//This function releases a lock that was previously acquired by the current thread, and wakes up one of the threads waiting for the lock. 
+void Lock::Release()
+{
+}
+#endif
+
 //----------------------------------------------------------------------
 // Semaphore::Semaphore
 // 	Initialize a semaphore, so that it can be used for synchronization.
