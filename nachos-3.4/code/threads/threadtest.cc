@@ -26,15 +26,19 @@ int testnum = 1;
 //----------------------------------------------------------------------
 
 #if defined(CHANGED) && defined(HW1_SEMAPHORES)
+
 int SharedVariable;
 Semaphore *sem;
+
 void
 SimpleThread(int which)
 {
 	int num, val;
+	
 	if(sem == NULL) {
 		sem = new Semaphore("mySem", 1);
 	}
+	
 	for (num = 0; num < 5; num++) {
 		sem -> P();
 		val = SharedVariable;
@@ -44,10 +48,41 @@ SimpleThread(int which)
 		sem -> V();
 		currentThread -> Yield();
 	}
+	
 	val = SharedVariable;
 	printf("Thread %d sees final value %d\n", which, val);
 }
+
+#elif defined(CHANGED) && defined(HW_LOCKS)
+
+int SharedVariable;
+Lock *lock;
+
+void
+SimpleThread(int which)
+{
+	int num, val;
+	
+	if(lock == NULL) {
+		lock = new Lock("myLock", 1);
+	}
+	
+	for (num = 0; num < 5; num++) {
+		lock -> Acquire();
+		val = SharedVariable;
+		printf("*** thread %d sees value %d\n", which, val);
+		currentThread->Yield();
+		SharedVariable = val + 1;
+		lock -> Release();
+		currentThread -> Yield();
+	}
+	
+	val = SharedVariable;
+	printf("Thread %d sees final value %d\n", which, val);
+}
+
 #else
+
 void SimpleThread(int which) {
 	int num;
 
@@ -56,6 +91,7 @@ void SimpleThread(int which) {
 		currentThread->Yield();
 	}
 }
+
 #endif
 
 //----------------------------------------------------------------------
