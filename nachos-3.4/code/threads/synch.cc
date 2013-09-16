@@ -35,60 +35,51 @@
 Lock::Lock(char* debugName)
 {
     name = debugName;
-    value = 1; //TODO: can probably remove
-    queue = new List; //TODO: can probably remove
-	hold = NULL;
+    value = 1;
+    queue = new List;
+	holder = NULL; //being held by "X"
 }
 
 //This function deallocates a lock object, when it is no longer needed.
 Lock::~Lock()
 {
-    delete queue;	
+    delete queue;
+	holder = NULL: //no longer being held by "X"
 }
 
 //This function waits for a lock to become free and then acquires the lock for the current thread.
 void Lock::Acquire()
 {
-// while(hold) {
-//		currentThread add to list
-//		currentThread sleep
-// hold = true
-
-//copy from Semaphore P
-IntStatus oldLevel = interrupt->SetLevel(IntOff);	// disable interrupts
+    IntStatus oldLevel = interrupt->SetLevel(IntOff);	// disable interrupts
     
-    while (value == 0) { 			// semaphore not available
-	queue->Append((void *)currentThread);	// so go to sleep
-	currentThread->Sleep();
+    while (value == 0) // semaphore not available
+	{
+	    queue->Append((void *)currentThread);	// so go to sleep
+	    currentThread->Sleep();
     } 
+	
     value--; 					// semaphore available, 
 						// consume its value
-    
+    holder = currentThread;
     (void) interrupt->SetLevel(oldLevel);	// re-enable interrupts
-
-while () {
-    
-}
 }
 
 //This function releases a lock that was previously acquired by the current thread, and wakes up one of the threads waiting for the lock. 
 void Lock::Release()
 {
-// hold = false
-// if (list is not empty) {
-//		remove from list
-//		from list scheduler -> ready
-
-//copy from Semaphore V
-Thread *thread;
+    Thread *thread;
     IntStatus oldLevel = interrupt->SetLevel(IntOff);
-
     thread = (Thread *)queue->Remove();
+	
     if (thread != NULL)	   // make thread ready, consuming the V immediately
-	scheduler->ReadyToRun(thread);
+	{
+	    scheduler->ReadyToRun(thread);
+    }
     value++;
+	holder = NULL;
     (void) interrupt->SetLevel(oldLevel);
 }
+
 #endif
 
 //----------------------------------------------------------------------

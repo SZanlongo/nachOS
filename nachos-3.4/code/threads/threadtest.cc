@@ -64,7 +64,7 @@ SimpleThread(int which)
 	int num, val;
 	
 	if(lock == NULL) {
-		lock = new Lock("myLock", 1);
+		lock = new Lock("myLock");
 	}
 	
 	for (num = 0; num < 5; num++) {
