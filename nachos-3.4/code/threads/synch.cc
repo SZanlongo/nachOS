@@ -26,7 +26,6 @@
 #include "system.h"
 
 #if defined(CHANGED)  && defined(HW1_LOCKS)
-bool currentlyHeld;
 //This constructor function initializes a lock object.
 /*
  * The  debugName  argument is a string supplied by the caller, which should just be stored into the 
@@ -38,6 +37,7 @@ Lock::Lock(char* debugName)
     name = debugName;
     value = 1; //TODO: can probably remove
     queue = new List; //TODO: can probably remove
+	hold = NULL;
 }
 
 //This function deallocates a lock object, when it is no longer needed.
@@ -53,6 +53,22 @@ void Lock::Acquire()
 //		currentThread add to list
 //		currentThread sleep
 // hold = true
+
+//copy from Semaphore P
+IntStatus oldLevel = interrupt->SetLevel(IntOff);	// disable interrupts
+    
+    while (value == 0) { 			// semaphore not available
+	queue->Append((void *)currentThread);	// so go to sleep
+	currentThread->Sleep();
+    } 
+    value--; 					// semaphore available, 
+						// consume its value
+    
+    (void) interrupt->SetLevel(oldLevel);	// re-enable interrupts
+
+while () {
+    
+}
 }
 
 //This function releases a lock that was previously acquired by the current thread, and wakes up one of the threads waiting for the lock. 
@@ -62,6 +78,16 @@ void Lock::Release()
 // if (list is not empty) {
 //		remove from list
 //		from list scheduler -> ready
+
+//copy from Semaphore V
+Thread *thread;
+    IntStatus oldLevel = interrupt->SetLevel(IntOff);
+
+    thread = (Thread *)queue->Remove();
+    if (thread != NULL)	   // make thread ready, consuming the V immediately
+	scheduler->ReadyToRun(thread);
+    value++;
+    (void) interrupt->SetLevel(oldLevel);
 }
 #endif
 
