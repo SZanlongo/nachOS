@@ -34,25 +34,27 @@
  */
 Lock::Lock(char* debugName)
 {
-	name = debugName;
-    value = initialValue;
+    name = debugName;
+    value = 1;
     queue = new List;
 }
 
 //This function deallocates a lock object, when it is no longer needed.
 Lock::~Lock()
 {
-	delete queue;	
+    delete queue;	
 }
 
 //This function waits for a lock to become free and then acquires the lock for the current thread.
 void Lock::Acquire()
 {
+    
 }
 
 //This function releases a lock that was previously acquired by the current thread, and wakes up one of the threads waiting for the lock. 
 void Lock::Release()
 {
+    
 }
 #endif
 
