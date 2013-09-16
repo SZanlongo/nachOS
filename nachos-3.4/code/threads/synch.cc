@@ -48,13 +48,16 @@ Lock::~Lock()
 //This function waits for a lock to become free and then acquires the lock for the current thread.
 void Lock::Acquire()
 {
-    
+// if(hold) {
+//	waiting = currentThread
+//	currentThread sleep
 }
 
 //This function releases a lock that was previously acquired by the current thread, and wakes up one of the threads waiting for the lock. 
 void Lock::Release()
 {
-    
+// if (waiting) {
+//	scheduler -> ready
 }
 #endif
 
