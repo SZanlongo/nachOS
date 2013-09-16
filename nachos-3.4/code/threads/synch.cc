@@ -26,6 +26,7 @@
 #include "system.h"
 
 #if defined(CHANGED)  && defined(HW1_LOCKS)
+bool currentlyHeld;
 //This constructor function initializes a lock object.
 /*
  * The  debugName  argument is a string supplied by the caller, which should just be stored into the 
@@ -35,8 +36,8 @@
 Lock::Lock(char* debugName)
 {
     name = debugName;
-    value = 1;
-    queue = new List;
+    value = 1; //TODO: can probably remove
+    queue = new List; //TODO: can probably remove
 }
 
 //This function deallocates a lock object, when it is no longer needed.
@@ -48,16 +49,19 @@ Lock::~Lock()
 //This function waits for a lock to become free and then acquires the lock for the current thread.
 void Lock::Acquire()
 {
-// if(hold) {
-//	waiting = currentThread
-//	currentThread sleep
+// while(hold) {
+//		currentThread add to list
+//		currentThread sleep
+// hold = true
 }
 
 //This function releases a lock that was previously acquired by the current thread, and wakes up one of the threads waiting for the lock. 
 void Lock::Release()
 {
-// if (waiting) {
-//	scheduler -> ready
+// hold = false
+// if (list is not empty) {
+//		remove from list
+//		from list scheduler -> ready
 }
 #endif
 
