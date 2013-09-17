@@ -53,7 +53,7 @@ SimpleThread(int which)
 	printf("Thread %d sees final value %d\n", which, val);
 }
 
-#elif defined(CHANGED) && defined(HW_LOCKS)
+#elif defined(CHANGED) && defined(HW1_LOCKS)
 
 int SharedVariable;
 Lock *lock;

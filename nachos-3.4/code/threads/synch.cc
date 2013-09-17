@@ -28,56 +28,56 @@
 #if defined(CHANGED)  && defined(HW1_LOCKS)
 //This constructor function initializes a lock object.
 /*
- * The  debugName  argument is a string supplied by the caller, which should just be stored into the 
- * new  Lock structure. Its purpose is simply to help distinguish various instances of locks in 
- * debugging printout.
- */
+* The  debugName  argument is a string supplied by the caller, which should just be stored into the 
+* new  Lock structure. Its purpose is simply to help distinguish various instances of locks in 
+* debugging printout.
+*/
 Lock::Lock(char* debugName)
 {
-    name = debugName;
-    value = 1;
-    queue = new List;
-    holder = NULL; //being held by "X"
+	name = debugName;
+	value = 1;
+	queue = new List;
+	holder = NULL; //being held by "X"
 }
 
 //This function deallocates a lock object, when it is no longer needed.
 Lock::~Lock()
 {
-    delete queue;
-    holder = NULL; //no longer being held by "X"
+	delete queue;
+	holder = NULL; //no longer being held by "X"
 }
 
 //This function waits for a lock to become free and then acquires the lock for the current thread.
 void Lock::Acquire()
 {
-    IntStatus oldLevel = interrupt->SetLevel(IntOff);	// disable interrupts
+	IntStatus oldLevel = interrupt->SetLevel(IntOff);	// disable interrupts
 
-    while (value == 0) // semaphore not available
-    {
-	    queue->Append((void *)currentThread);	// so go to sleep
-	    currentThread->Sleep();
-    } 
+	while (value == 0) // semaphore not available
+	{
+		queue->Append((void *)currentThread);	// so go to sleep
+		currentThread->Sleep();
+	} 
 	
-    value--; 					// semaphore available, 
-						// consume its value
-    holder = currentThread;
-    (void) interrupt->SetLevel(oldLevel);	// re-enable interrupts
+	value--; 					// semaphore available, 
+	// consume its value
+	holder = currentThread;
+	(void) interrupt->SetLevel(oldLevel);	// re-enable interrupts
 }
 
 //This function releases a lock that was previously acquired by the current thread, and wakes up one of the threads waiting for the lock. 
 void Lock::Release()
 {
-    Thread *thread;
-    IntStatus oldLevel = interrupt->SetLevel(IntOff);
-    thread = (Thread *)queue->Remove();
+	Thread *thread;
+	IntStatus oldLevel = interrupt->SetLevel(IntOff);
+	thread = (Thread *)queue->Remove();
 	
-    if (thread != NULL)	   // make thread ready, consuming the V immediately
-    {
-        scheduler->ReadyToRun(thread);
-    }
-    value++;
-    holder = NULL;
-    (void) interrupt->SetLevel(oldLevel);
+	if (thread != NULL)	   // make thread ready, consuming the V immediately
+	{
+		scheduler->ReadyToRun(thread);
+	}
+	value++;
+	holder = NULL;
+	(void) interrupt->SetLevel(oldLevel);
 }
 
 #else
@@ -99,9 +99,9 @@ void Lock::Release() {}
 
 Semaphore::Semaphore(char* debugName, int initialValue)
 {
-    name = debugName;
-    value = initialValue;
-    queue = new List;
+	name = debugName;
+	value = initialValue;
+	queue = new List;
 }
 
 //----------------------------------------------------------------------
@@ -112,7 +112,7 @@ Semaphore::Semaphore(char* debugName, int initialValue)
 
 Semaphore::~Semaphore()
 {
-    delete queue;
+	delete queue;
 }
 
 //----------------------------------------------------------------------
@@ -128,16 +128,16 @@ Semaphore::~Semaphore()
 void
 Semaphore::P()
 {
-    IntStatus oldLevel = interrupt->SetLevel(IntOff);	// disable interrupts
-    
-    while (value == 0) { 			// semaphore not available
-	queue->Append((void *)currentThread);	// so go to sleep
-	currentThread->Sleep();
-    } 
-    value--; 					// semaphore available, 
-						// consume its value
-    
-    (void) interrupt->SetLevel(oldLevel);	// re-enable interrupts
+	IntStatus oldLevel = interrupt->SetLevel(IntOff);	// disable interrupts
+	
+	while (value == 0) { 			// semaphore not available
+		queue->Append((void *)currentThread);	// so go to sleep
+		currentThread->Sleep();
+	} 
+	value--; 					// semaphore available, 
+	// consume its value
+	
+	(void) interrupt->SetLevel(oldLevel);	// re-enable interrupts
 }
 
 //----------------------------------------------------------------------
@@ -151,14 +151,14 @@ Semaphore::P()
 void
 Semaphore::V()
 {
-    Thread *thread;
-    IntStatus oldLevel = interrupt->SetLevel(IntOff);
+	Thread *thread;
+	IntStatus oldLevel = interrupt->SetLevel(IntOff);
 
-    thread = (Thread *)queue->Remove();
-    if (thread != NULL)	   // make thread ready, consuming the V immediately
+	thread = (Thread *)queue->Remove();
+	if (thread != NULL)	   // make thread ready, consuming the V immediately
 	scheduler->ReadyToRun(thread);
-    value++;
-    (void) interrupt->SetLevel(oldLevel);
+	value++;
+	(void) interrupt->SetLevel(oldLevel);
 }
 
 // Dummy functions -- so we can compile our later assignments 
