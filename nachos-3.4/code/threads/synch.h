@@ -80,6 +80,9 @@ class Lock {
   private:
     char* name;				// for debugging
     // plus some other stuff you'll need to define
+	int value;         // lock value, always >= 0
+    List *queue;       // threads waiting in P() for the value to be > 
+	Thread *holder; // thread holding "X"
 };
 
 // The following class defines a "condition variable".  A condition

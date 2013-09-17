@@ -37,23 +37,23 @@ Lock::Lock(char* debugName)
     name = debugName;
     value = 1;
     queue = new List;
-	holder = NULL; //being held by "X"
+    holder = NULL; //being held by "X"
 }
 
 //This function deallocates a lock object, when it is no longer needed.
 Lock::~Lock()
 {
     delete queue;
-	holder = NULL: //no longer being held by "X"
+    holder = NULL; //no longer being held by "X"
 }
 
 //This function waits for a lock to become free and then acquires the lock for the current thread.
 void Lock::Acquire()
 {
     IntStatus oldLevel = interrupt->SetLevel(IntOff);	// disable interrupts
-    
+
     while (value == 0) // semaphore not available
-	{
+    {
 	    queue->Append((void *)currentThread);	// so go to sleep
 	    currentThread->Sleep();
     } 
@@ -72,13 +72,20 @@ void Lock::Release()
     thread = (Thread *)queue->Remove();
 	
     if (thread != NULL)	   // make thread ready, consuming the V immediately
-	{
-	    scheduler->ReadyToRun(thread);
+    {
+        scheduler->ReadyToRun(thread);
     }
     value++;
-	holder = NULL;
+    holder = NULL;
     (void) interrupt->SetLevel(oldLevel);
 }
+
+#else
+
+Lock::Lock(char* debugName) {}
+Lock::~Lock() {}
+void Lock::Acquire() {}
+void Lock::Release() {}
 
 #endif
 
@@ -157,10 +164,6 @@ Semaphore::V()
 // Dummy functions -- so we can compile our later assignments 
 // Note -- without a correct implementation of Condition::Wait(), 
 // the test case in the network assignment won't work!
-Lock::Lock(char* debugName) {}
-Lock::~Lock() {}
-void Lock::Acquire() {}
-void Lock::Release() {}
 
 Condition::Condition(char* debugName) { }
 Condition::~Condition() { }
