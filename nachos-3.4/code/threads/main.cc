@@ -59,10 +59,10 @@ extern int testnum;
 
 // External functions used by this file
 #if defined(CHANGED)
-extern void ThreadTest(int n);
-#endif
-
+extern void ThreadTest(int n), Copy(char *unixFile, char *nachosFile);
+#else
 extern void ThreadTest(void), Copy(char *unixFile, char *nachosFile);
+#endif
 extern void Print(char *file), PerformanceTest(void);
 extern void StartProcess(char *file), ConsoleTest(char *in, char *out);
 extern void MailTest(int networkID);
@@ -104,7 +104,11 @@ main(int argc, char **argv)
       }
     }
 
-    ThreadTest(4);
+#if defined (CHANGED)
+    ThreadTest(testnum); // use the 'testnum' variable (parsed from the command-line options) as the number of threads to fork
+#else
+    ThreadTest();
+#endif
 #endif
 
     for (argc--, argv++; argc > 0; argc -= argCount, argv += argCount) {

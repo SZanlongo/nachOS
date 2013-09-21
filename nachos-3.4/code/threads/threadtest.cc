@@ -11,7 +11,10 @@
 
 #include "copyright.h"
 #include "system.h"
+
+#if defined(HW1_SEMAPHORES) || defined(HW1_LOCKS) || defined(HW1_CONDITIONS)
 #include "synch.h"
+#endif
 
 // testnum is set in main.cc
 int testnum = 1;
@@ -25,93 +28,81 @@ int testnum = 1;
 //	purposes.
 //----------------------------------------------------------------------
 
-#if defined(CHANGED) && defined(HW1_SEMAPHORES)
-
+#if defined(CHANGED)
 int SharedVariable;
-Semaphore *sem;
+int numWriters;
 
-void
-SimpleThread(int which)
-{
-	int num, val;
-	
-	if(sem == NULL) {
-		sem = new Semaphore("mySem", 1);
-	}
-	
-	for (num = 0; num < 5; num++) {
-		sem -> P();
-		val = SharedVariable;
-		printf("*** thread %d sees value %d\n", which, val);
-		currentThread->Yield();
-		SharedVariable = val + 1;
-		sem -> V();
-		currentThread -> Yield();
-	}
-	
-	val = SharedVariable;
-	printf("Thread %d sees final value %d\n", which, val);
-}
+#if defined(HW1_SEMAPHORES)
+Semaphore *semaphore;
+#endif
 
-#elif defined(CHANGED) && defined(HW1_LOCKS)
-
-int SharedVariable;
+#if defined(HW1_LOCKS) || defined(HW1_CONDITIONS)
 Lock *lock;
+#endif
 
-void
-SimpleThread(int which)
-{
-	int num, val;
-	
-	if(lock == NULL) {
-		lock = new Lock("myLock");
-	}
-	
-	for (num = 0; num < 5; num++) {
-		lock -> Acquire();
-		val = SharedVariable;
-		printf("*** thread %d sees value %d\n", which, val);
-		currentThread->Yield();
-		SharedVariable = val + 1;
-		lock -> Release();
-		currentThread -> Yield();
-	}
-	
-	val = SharedVariable;
-	printf("Thread %d sees final value %d\n", which, val);
-}
-
-#elif defined(CHANGED) && defined(HW1_ELEVATOR)
-
-#defined MAX_PEOPLE 5
-
-struct Person
-{
-    int id;
-}
-
-void Elevator(int numFloors)
-{
-    Thread *elevator = new Thread("elevator");
-	
-}
-
-void ArrivingGoingFromTo(int atFloor, int toFloor)
-{
-    
-}
-
-#else
+#if defined(HW1_CONDITIONS)
+Condition *condition;
+#endif
 
 void SimpleThread(int which) {
-	int num;
+    int num, val;
+    
+    for(num = 0; num < 5; num++) {
+#if defined(HW1_SEMAPHORES)
+        semaphore->P();
+#endif
 
-	for (num = 0; num < 5; num++) {
-		printf("*** thread %d looped %d times\n", which, num);
-		currentThread->Yield();
-	}
+#if defined(HW1_LOCKS)
+        lock->Acquire();
+#endif
+
+#if defined(HW1_CONDITIONS)
+        condition->Wait(lock);
+#endif
+
+        val = SharedVariable;
+        printf("*** thread %d sees value %d\n", which, val);
+        currentThread->Yield();
+        SharedVariable = val+1;
+        
+#if defined(HW1_SEMAPHORES)
+        semaphore->V();
+#endif
+
+#if defined(HW1_LOCKS)
+        lock->Release();
+#endif
+
+#if defined(HW1_CONDITIONS)
+        condition->Signal(lock);
+#endif
+
+        currentThread->Yield();
+    }
+    
+    // this thread is no longer a writer
+    numWriters--;
+    printf("%s...numWriters=%d\n", currentThread->getName(), numWriters);
+    
+    // wait until all threads have finished updating the shared variable
+    // (this is the "barrier")
+    while (numWriters > 0) currentThread->Yield();
+    DEBUG('t', "'%s' resuming after numWriters=0\n", currentThread->getName());
+    
+    val = SharedVariable;
+    printf("Thread %d sees final value %d\n", which, val);
 }
-
+#else
+void
+SimpleThread(int which)
+{
+    int num;
+    
+    for (num = 0; num < 5; num++) {
+        printf("*** thread %d looped %d times\n", which, num);
+        currentThread->Yield();
+    }
+}
 #endif
 
 //----------------------------------------------------------------------
@@ -120,40 +111,66 @@ void SimpleThread(int which) {
 //	to call SimpleThread, and then calling SimpleThread ourselves.
 //----------------------------------------------------------------------
 
-void ThreadTest1() {
-	DEBUG('t', "Entering ThreadTest1");
+void
+ThreadTest1()
+{
+    DEBUG('t', "Entering ThreadTest1");
 
-	Thread *t = new Thread("forked thread");
+    Thread *t = new Thread("forked thread");
 
-	t->Fork(SimpleThread, 1);
-	SimpleThread(0);
+    t->Fork(SimpleThread, 1);
+    SimpleThread(0);
 }
 
 //----------------------------------------------------------------------
 // ThreadTest
 // 	Invoke a test routine.
 //----------------------------------------------------------------------
-
-void ThreadTest() {
-	switch (testnum) {
-	case 1:
-		ThreadTest1();
-		break;
-	default:
-		printf("No test specified.\n");
-		break;
-	}
-}
-
 #if defined(CHANGED) && defined(THREADS)
-//Fork  n  new threads instead of just one
-void ThreadTest(int n)
+void ThreadTest(int n) {
+    DEBUG('t', "ThreadTest(): called with n=%d\n", n);
+    
+    // each created thread is a writer, plus the main thread
+    numWriters = n + 1;
+    
+#if defined(HW1_SEMAPHORES)
+    semaphore = new Semaphore("testSemaphore", 1);
+#endif
+
+#if defined(HW1_LOCKS) || defined(HW1_CONDITIONS)
+    lock = new Lock("testLock");
+#endif
+
+#if defined(HW1_CONDITIONS)
+    condition = new Condition("testCondition");
+#endif
+    
+    for (int i = 1; i <= n; i++) {
+        char *threadName = new char[13];
+        sprintf(threadName, "testThread-%d", i);
+        threadName[12] = '\0';
+        
+        DEBUG('t', "Spawning thread '%s'\n", threadName);
+        Thread *t = new Thread(threadName);
+        
+        t->Fork(SimpleThread, i);
+    }
+    
+    SimpleThread(0);
+    
+    DEBUG('t', "Finished spawning threads, awaiting all of them to finish\n");
+}
+#else
+void
+ThreadTest()
 {
-	for(int i = 0; i < n; i++)
-	{
-		Thread *thread = new Thread("new forked thread");
-		thread -> Fork(SimpleThread, i + 1);
-	}
-	SimpleThread(0);
+    switch (testnum) {
+    case 1:
+	ThreadTest1();
+	break;
+    default:
+	printf("No test specified.\n");
+	break;
+    }
 }
 #endif
