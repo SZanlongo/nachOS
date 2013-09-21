@@ -81,6 +81,26 @@ SimpleThread(int which)
 	printf("Thread %d sees final value %d\n", which, val);
 }
 
+#elif defined(CHANGED) && defined(HW1_ELEVATOR)
+
+#defined MAX_PEOPLE 5
+
+struct Person
+{
+    int id;
+}
+
+void Elevator(int numFloors)
+{
+    Thread *elevator = new Thread("elevator");
+	
+}
+
+void ArrivingGoingFromTo(int atFloor, int toFloor)
+{
+    
+}
+
 #else
 
 void SimpleThread(int which) {
