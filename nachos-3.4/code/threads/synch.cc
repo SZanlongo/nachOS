@@ -98,19 +98,37 @@ Condition::~Condition()
 //This function waits for a condition to become free and then acquires the conditionLock for the current thread.
 void Condition::Wait(Lock* conditionLock)
 {
-    
+    IntStatus oldLevel = interrupt -> SetLevel(IntOff);
+	conditionLock -> Release();
+	blockList -> Append (void*) currentThread;
+	currentThread -> Sleep();	
+	(void) interrupt -> SetLevel(oldLevel);
+	conditionLock -> Acquire();
 }
 
 //This function wakes up one of the threads that is waiting on the condition.
 void Condition::Signal(Lock* conditionLock)
 {
-    
+    Thread *thread;
+	IntStatus oldLevel = interrupt -> SetLevel(IntOff);
+	thread = (Thread*) blockList->Remove();
+	if (thread != NULL)
+	{
+	    scheduler->ReadyToRun(thread);
+	}
+	(void) interrupt->SetLevel(oldLevel);
 }
 
 //This function wakes up all threads that are waiting for the condition.
 void Condition::Broadcast(Lock* conditionLock)
 {
-    
+    Thread *thread;
+	IntStatus oldLevel = interrupt -> SetLevel(IntOff);
+	while((thread = (Thread*) blockList -> Remove()) != NULL)
+	{
+	    scheduler -> ReadyToRun(thread);
+	}
+	(void) interrupt -> SetLevel(oldLevel);
 }
 
 #else
