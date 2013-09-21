@@ -154,5 +154,6 @@ void ThreadTest(int n)
 		Thread *thread = new Thread("new forked thread");
 		thread -> Fork(SimpleThread, i + 1);
 	}
+	SimpleThread(0);
 }
 #endif

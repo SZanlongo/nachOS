@@ -186,7 +186,7 @@ Semaphore::~Semaphore()
 //----------------------------------------------------------------------
 
 void
-Semaphore::P()
+Semaphore::P() //or wait() or down()
 {
 	IntStatus oldLevel = interrupt->SetLevel(IntOff);	// disable interrupts
 	
@@ -209,7 +209,7 @@ Semaphore::P()
 //----------------------------------------------------------------------
 
 void
-Semaphore::V()
+Semaphore::V() //or signal() or up()
 {
 	Thread *thread;
 	IntStatus oldLevel = interrupt->SetLevel(IntOff);
