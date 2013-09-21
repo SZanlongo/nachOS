@@ -80,12 +80,54 @@ void Lock::Release()
 	(void) interrupt->SetLevel(oldLevel);
 }
 
+#elif defined(CHANGED) && defined(HW1_CONDITIONS)
+
+//This constructor function initializes a condition object.
+Condition::Condition(char* debugName)
+{
+    name = debugName;
+	blockList = new List;
+}
+
+//This function deallocates a condition object, when it is no longer needed.
+Condition::~Condition()
+{
+    delete blockList;
+}
+
+//This function waits for a condition to become free and then acquires the conditionLock for the current thread.
+void Condition::Wait(Lock* conditionLock)
+{
+    
+}
+
+//This function wakes up one of the threads that is waiting on the condition.
+void Condition::Signal(Lock* conditionLock)
+{
+    
+}
+
+//This function wakes up all threads that are waiting for the condition.
+void Condition::Broadcast(Lock* conditionLock)
+{
+    
+}
+
 #else
 
+// Dummy functions -- so we can compile our later assignments 
+// Note -- without a correct implementation of Condition::Wait(), 
+// the test case in the network assignment won't work!
 Lock::Lock(char* debugName) {}
 Lock::~Lock() {}
 void Lock::Acquire() {}
 void Lock::Release() {}
+
+Condition::Condition(char* debugName) { }
+Condition::~Condition() { }
+void Condition::Wait(Lock* conditionLock) { ASSERT(FALSE); }
+void Condition::Signal(Lock* conditionLock) { }
+void Condition::Broadcast(Lock* conditionLock) { }
 
 #endif
 
@@ -161,12 +203,4 @@ Semaphore::V()
 	(void) interrupt->SetLevel(oldLevel);
 }
 
-// Dummy functions -- so we can compile our later assignments 
-// Note -- without a correct implementation of Condition::Wait(), 
-// the test case in the network assignment won't work!
 
-Condition::Condition(char* debugName) { }
-Condition::~Condition() { }
-void Condition::Wait(Lock* conditionLock) { ASSERT(FALSE); }
-void Condition::Signal(Lock* conditionLock) { }
-void Condition::Broadcast(Lock* conditionLock) { }
