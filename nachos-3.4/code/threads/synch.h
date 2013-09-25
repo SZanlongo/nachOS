@@ -14,7 +14,6 @@
 // All rights reserved.  See copyright.h for copyright notice and limitation 
 // synch.h -- synchronization primitives.  
 
-// Test for branch.
 #ifndef SYNCH_H
 #define SYNCH_H
 
