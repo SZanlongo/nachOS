@@ -46,6 +46,30 @@ void Elevator::OpenDoors(){
 ElevatorDirection DetermineDirection(int currentFloor, int destinationFloor){
     return currentFloor < destinationFloor ? UP : DOWN;
 }
+
+void MoveFloors() {
+
+    for (int i = 0; i < 50000000; i++) {} //simulate the elevator moving
+    if (elevatorDirection == UP) {
+        currentFloor++;
+    } else {
+        currentFloor --;
+    }
+}
+
+void IncrementElevatorCapacity() {
+
+    if (currentCapacity < 5) {
+        currentCapacity++;
+    }
+}
+
+void DecrementElevatorCapacity() {
+    if (currentCapaciy > 0) {
+        currentCapacity--;
+    }
+}
+
 void MoveFloors(); // Moves elevator a floor closer to the target floor.
 int ElevatorDirection(); // Gets the elevator direction, an elevator can be going up or down.
 void RequestElevator(ElevatorRequest elevatorRequest); //Requests an elevator.
