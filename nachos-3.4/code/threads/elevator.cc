@@ -1,6 +1,5 @@
 #include "elevator.h"
 #include "system.h"
-#include <math>
 
 // Creates an instance of an Elevator object with the specified number of floors.
 Elevator::Elevator(int numberOfFloors){
@@ -19,7 +18,8 @@ Elevator::~Elevator(){
 
 // Opens the doors of the elevator to allow current passangers to get out and new one to get in.
 void Elevator::OpenDoors(){
-    elevatorSynchronization.arrivedToNewFloor->Broadcast(); // Wakes up elevator users in the elevator so they can leave if 
+    elevatorSynchronization.currentFloorLock->Acquire();
+    elevatorSynchronization.arrivedToNewFloor->Broadcast(elevatorSynchronization.currentFloor); // Wakes up elevator users in the elevator so they can leave if 
                                                             // elevator arrived to their requested floor.
 
     int amountOfElevatorUsersOnCurrentFloor = 0;
@@ -36,18 +36,26 @@ void Elevator::OpenDoors(){
             amountOfElevatorUsersOnCurrentFloor++;  // heading in same direction as elevator.
         }
 
-        elevatorSynchronization.
-        while(amountOfElevatorUsersOnCurrentFloor != 0)
+    elevatorSynchronization.elevatorRequestsLock->Release();
+
+    elevatorSynchronization.enterElevatorLock->Acquire();
+    while(amountOfElevatorUsersOnCurrentFloor != 0){
+        elevatorSynchronization.elevatorUsersEnteredElevator->Broadcast(elevatorSynchronization.enterElevatorLock);
+        elevatorSynchronization.elevatorUsersEnteredElevator->Wait(elevatorSynchronization.enterElevatorLock);
+        amountOfElevatorUsersOnCurrentFloor--;
     }
-    
-    waitingElevatorUsers[currentFloor - 1]->Broadcast(); // Wakes up elevator users waiting for elevator on current
 }
 
 ElevatorDirection DetermineDirection(int currentFloor, int destinationFloor){
     return currentFloor < destinationFloor ? UP : DOWN;
 }
+
 void MoveFloors(); // Moves elevator a floor closer to the target floor.
+
 int ElevatorDirection(); // Gets the elevator direction, an elevator can be going up or down.
+
 void RequestElevator(ElevatorRequest elevatorRequest); //Requests an elevator.
+
 void DecrementElevatorCapacity(); // Decrements the capacity of the elevator by 1.
+
 void IncrementElevatorCapacity(); // Increments the capacity of the elevator by 1.
