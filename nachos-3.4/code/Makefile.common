@@ -37,6 +37,7 @@ AS = as
 PROGRAM = nachos
 
 THREAD_H =../threads/copyright.h\
+	../threads/elevator.h\
 	../threads/list.h\
 	../threads/scheduler.h\
 	../threads/synch.h \
@@ -50,6 +51,7 @@ THREAD_H =../threads/copyright.h\
 	../machine/timer.h
 
 THREAD_C =../threads/main.cc\
+	../threads/elevator.cc\
 	../threads/list.cc\
 	../threads/scheduler.cc\
 	../threads/synch.cc \
@@ -66,7 +68,7 @@ THREAD_C =../threads/main.cc\
 THREAD_S = ../threads/switch.s
 
 THREAD_O =main.o list.o scheduler.o synch.o synchlist.o system.o thread.o \
-	utility.o threadtest.o interrupt.o stats.o sysdep.o timer.o
+	utility.o threadtest.o interrupt.o stats.o sysdep.o timer.o elevator.o
 
 USERPROG_H = ../userprog/addrspace.h\
 	../userprog/bitmap.h\

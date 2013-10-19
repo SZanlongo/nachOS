@@ -1,16 +1,34 @@
 Project 1 Report
 
+oTeam Members:
+Jaso1 Report
 Team Members:
 Jason Allen: 1661618
 Francisco Montas: 2112192
 Sebastian Zanlongo: 2820526
 
+Running Exercises:
+The threads/Makefile DEFINES must have the flags set: -DCHANGED and:
+-DTHREADS
+-DHW1_SEMAPHORES
+-DHW1_LOCKS
+-DHW1_Elevator
+
 Exercise 1: Simple Threads Programming
-
-
+When the threads are synchronized using semaphores to protect the "critical
+section" of modifying SharedValue, each thread loops 5 times, resulting in the
+SharedVariable finally reaching 5n (the correct value).
 
 Exercise 2: Implementing Locks
+Replacing the Semaphores with Locks in Exercise 1, we can still run it
+successfully; the locks are held by one thread at a time, and record which
+thread is using the Lock, once a thread acquires a Lock (using Acquire()),
+only that thread can release (Release())it. 
 
 Exercise 3: Implementing Conditions
+We were able to successfully implement all of the Condition methods using code
+similar to what was provided with the Semaphore implementation, most notably
+storing Thread references in a queue and making use of the Lock class.
 
 Exercise 4: Elevator
+Implemented required fuctions in main.cc elevator.h elevator.cc

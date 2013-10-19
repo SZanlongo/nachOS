@@ -1,61 +1,135 @@
 #include "elevator.h"
-#include "system.h"
 
 // Creates an instance of an Elevator object with the specified number of floors.
-Elevator::Elevator(int numberOfFloors){
+SimpleElevator::SimpleElevator(int amountOfFloors) {
 
-    Elevator::numberOfFloors = numberOfFloors;
+    numberOfFloors = amountOfFloors;
     currentCapacity = 5;
     currentFloor = 1;
     elevatorDirection = UP;
+    int arr [numberOfFloors];
+    requestPerFloor = arr;
+    numberOfElevatorRequest = 0;
 }
 
 // Releases resources of an Elevator object.
-Elevator::~Elevator(){
-    delete elevatorRequests;
+SimpleElevator::~SimpleElevator(){
 }
 
 
 // Opens the doors of the elevator to allow current passangers to get out and new one to get in.
-void Elevator::OpenDoors(){
+void SimpleElevator::OpenAndCloseDoors(){
+
     elevatorSynchronization.currentFloorLock->Acquire();
-    elevatorSynchronization.arrivedToNewFloor->Broadcast(elevatorSynchronization.currentFloor); // Wakes up elevator users in the elevator so they can leave if 
-                                                            // elevator arrived to their requested floor.
+    elevatorSynchronization.arrivedToNewFloor->Broadcast(elevatorSynchronization.currentFloorLock); // Wakes up elevator users in the elevator so they can leave if 
+    elevatorSynchronization.currentFloorLock->Release();                                            // elevator arrived to their requested floor.
+                                                         
 
-    int amountOfElevatorUsersOnCurrentFloor = 0;
-    elevatorSynchronization.elevatorRequestsLock->Acquire();
+//     elevatorSynchronization.elevatorRequestsLock->Acquire();
+//     int amountOfElevatorUsersOnCurrentFloor = requestPerFloor[currentFloor - 1];
+//     elevatorSynchronization.elevatorRequestsLock->Release();
 
-    for(int i = 0; i < elevatorRequests.size();i++){
+    elevatorSynchronization.currentFloorLock->Acquire();
+    elevatorSynchronization.attemptToEnterElevator->Broadcast(elevatorSynchronization.currentFloorLock);
+    elevatorSynchronization.currentFloorLock->Release();
 
-        ElevatorRequest elevatorRequest = elevatorRequests[i];
+//     elevatorSynchronization.closeDoorLock->Acquire(); // As soon as all expected elevator users enter elevator close
+//                                                       // door.
+//     while(amountOfElevatorUsersOnCurrentFloor != 0){
+//         elevatorSynchronization.elevatorUsersEnteredElevator->Wait(elevatorSynchronization.closeDoorLock);
+//         amountOfElevatorUsersOnCurrentFloor--;
+//     }
+// 
+//     elevatorSynchronization.closeDoorLock->Release();
+}
 
-        //TODO: Should be able to refactor into less statements by adding if condition as loop variable.
-        if(elevatorRequest.currentFloor == currentFloor &&  
-           elevatorDirection == DetermineDirection(elevatorRequest.currentFloor, elevatorRequest.destinationFloor)){
-                                                    // Counts the amount of people that are in current floor and are
-            amountOfElevatorUsersOnCurrentFloor++;  // heading in same direction as elevator.
-        }
+void
+SimpleElevator::MoveFloors() {                       // Moves elevator a floor closer to the target floor.
 
-    elevatorSynchronization.elevatorRequestsLock->Release();
+    elevatorSynchronization.currentFloorLock->Acquire();
 
-    elevatorSynchronization.enterElevatorLock->Acquire();
-    while(amountOfElevatorUsersOnCurrentFloor != 0){
-        elevatorSynchronization.elevatorUsersEnteredElevator->Broadcast(elevatorSynchronization.enterElevatorLock);
-        elevatorSynchronization.elevatorUsersEnteredElevator->Wait(elevatorSynchronization.enterElevatorLock);
-        amountOfElevatorUsersOnCurrentFloor--;
+    for (int i = 0; i < 50000000; i++) {} //simulate the elevator moving
+    if (elevatorDirection == UP) {
+        currentFloor++;
+    } else {
+        currentFloor --;
+    }
+
+    if(elevatorDirection == UP && currentFloor == numberOfFloors){
+        elevatorDirection = DOWN;
+    }
+
+    if(elevatorDirection == DOWN && currentFloor == 0){
+         elevatorDirection = UP;
+    }
+    
+    elevatorSynchronization.currentFloorLock->Release();
+}
+
+void 
+SimpleElevator::DecrementElevatorCapacity() {        // Decrements the capacity of the elevator by 1.
+
+    if (currentCapacity < 5) {
+        currentCapacity++;
     }
 }
 
-ElevatorDirection DetermineDirection(int currentFloor, int destinationFloor){
-    return currentFloor < destinationFloor ? UP : DOWN;
+void 
+SimpleElevator::IncrementElevatorCapacity() {       // Increments the capacity of the elevator by 1.
+    
+    if (currentCapacity > 0) {
+        currentCapacity--;
+    }
 }
 
-void MoveFloors(); // Moves elevator a floor closer to the target floor.
+int 
+SimpleElevator::ElevatorDirection(){ // Gets the elevator direction, an elevator can be going up or down.
 
-int ElevatorDirection(); // Gets the elevator direction, an elevator can be going up or down.
+    return elevatorDirection;
+}
 
-void RequestElevator(ElevatorRequest elevatorRequest); //Requests an elevator.
+void 
+SimpleElevator::RequestElevator(int floor){ //Requests an elevator.
 
-void DecrementElevatorCapacity(); // Decrements the capacity of the elevator by 1.
+    elevatorSynchronization.elevatorRequestsLock->Acquire();
 
-void IncrementElevatorCapacity(); // Increments the capacity of the elevator by 1.
+    numberOfElevatorRequest++;
+    requestPerFloor[floor - 1]++;
+
+    elevatorSynchronization.elevatorRequestsLock->Release();
+}
+
+void 
+SimpleElevator::RemoveElevatorRequest(int floor) { // Removes an elevator request.
+
+    elevatorSynchronization.elevatorRequestsLock->Acquire();
+
+    numberOfElevatorRequest--;
+    requestPerFloor[floor - 1]--;
+
+    elevatorSynchronization.elevatorRequestsLock->Release();
+}
+
+ElevatorDirection 
+SimpleElevator::GetElevatorDirection(){
+
+    return elevatorDirection;
+}
+
+int 
+SimpleElevator::GetNumberOfElevatorRequest() {
+
+    return numberOfElevatorRequest;
+}
+
+int 
+SimpleElevator::GetCurrentFloor() {
+
+    return currentFloor;
+}
+
+bool 
+SimpleElevator::ElevatorHasSpace() {
+
+    return currentCapacity < 5;
+}

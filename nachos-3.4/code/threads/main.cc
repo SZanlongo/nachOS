@@ -52,40 +52,109 @@
 
 #include "utility.h"
 #include "system.h"
+#include "elevator.h"
 
 #ifdef THREADS
 extern int testnum;
 #endif
 
 // External functions used by this file
-
-extern void ThreadTest(int numberOfThreads), Copy(char *unixFile, char *nachosFile);
+#if defined(CHANGED)
+extern void ThreadTest(int n), Copy(char *unixFile, char *nachosFile);
+#else
+extern void ThreadTest(void), Copy(char *unixFile, char *nachosFile);
+#endif
 extern void Print(char *file), PerformanceTest(void);
 extern void StartProcess(char *file), ConsoleTest(char *in, char *out);
 extern void MailTest(int networkID);
 
 #ifdef HW1_Elevator
-Lock* elevatorIsActiveLock = new Lock("elevatorIsActiveLock");
-bool elevatorIsActive;
-int numFloor; 
+SimpleElevator* elevator;
+
+void StartElevator(int numFloors) {
+
+    if(elevator == NULL){
+        elevator = new SimpleElevator(numFloors);
+    }
+
+    while(true){
+        elevatorSynchronization.elevatorRequestsLock->Acquire();
+
+        while(elevator->GetNumberOfElevatorRequest()) {
+            elevatorSynchronization.elevatorIsActive->Wait(elevatorSynchronization.elevatorRequestsLock);
+        }
+
+        elevatorSynchronization.elevatorRequestsLock->Release();
+
+        elevator->MoveFloors();
+        printf("Elevator arrives on floor %d.", elevator->GetCurrentFloor());
+        elevator->OpenAndCloseDoors();
+    }
+}
+
 void Elevator(int numFloors) {
 
-elevatorIsActiveLock->Acquire();
-bool elevatorIsActive = true;
-elevatorIsActiveLock->Release();
+    Thread *t = new Thread("Elevator Threads");
 
+    t->Fork(StartElevator, numFloors);
 }
 
-void ArrivingGoingFromTo(int atFloor, int toFloor) {
 
-elevatorIsActiveLock->Acquire();
-if (!elevatorIsActive){
-    Thread* elevatorThread = new Thread("Elevator Thread");
-    elevatorThread->Fork((void*)Elevator,numFloor); 
-    elevatorIsActive = true;
+void StartArrivingGoingFromTo(int elevatorUser) {
+    
+    int atFloor = ((ElevatorUser*)elevatorUser)->fromFloor;
+    int toFloor = ((ElevatorUser*)elevatorUser)->toFloor;
+    int id = ((ElevatorUser*)elevatorUser)->id;
+
+    printf("Person %d wants to go to floor %d from floor %d.", id, toFloor, atFloor);
+    ElevatorDirection direction = atFloor - toFloor < 0 ? UP : DOWN;
+
+    elevatorSynchronization.elevatorRequestsLock->Acquire();
+    elevator->RequestElevator(atFloor);
+    elevatorSynchronization.elevatorIsActive->Broadcast(elevatorSynchronization.elevatorRequestsLock);
+    elevatorSynchronization.elevatorRequestsLock->Release();
+
+    elevatorSynchronization.currentFloorLock->Acquire();
+    elevatorSynchronization.currentCapacityLock->Acquire();
+
+    while(elevator->GetCurrentFloor() != atFloor || elevator->GetElevatorDirection() != direction 
+       || !elevator->ElevatorHasSpace()) {
+
+        elevatorSynchronization.currentCapacityLock->Release();
+        elevatorSynchronization.attemptToEnterElevator->Wait(elevatorSynchronization.currentFloorLock);
+        elevatorSynchronization.currentCapacityLock->Acquire();
+    }
+    elevatorSynchronization.currentFloorLock->Release();
+
+    elevator->DecrementElevatorCapacity();
+    printf("Person %d got into the elevator.", id);
+    elevatorSynchronization.currentCapacityLock->Release();
+
+    elevatorSynchronization.currentFloorLock->Acquire();
+    while(elevator->GetCurrentFloor() != toFloor) {
+
+        elevatorSynchronization.arrivedToNewFloor->Wait(elevatorSynchronization.currentFloorLock);
+    }
+
+    elevatorSynchronization.currentFloorLock->Release();
+
+    elevator->RemoveElevatorRequest(atFloor);
+
+    elevatorSynchronization.currentCapacityLock->Acquire();
+    elevator->IncrementElevatorCapacity();
+    printf("Person %d got out of the elevator..", id);
+    elevatorSynchronization.currentCapacityLock->Release();
 }
-elevatorIsActiveLock->Release();
 
+int id = 0;
+void ArrivingGoingFromTo(int fromFloor, int toFloor){
+        
+        ElevatorUser elevatorUser;
+        elevatorUser.fromFloor = fromFloor;
+        elevatorUser.toFloor = toFloor;
+        elevatorUser.id = ++id;
+        Thread* t = new Thread("Elevator User.");
+        t->Fork(StartArrivingGoingFromTo, &elevatorUser);
 }
 #endif
 
@@ -106,7 +175,6 @@ elevatorIsActiveLock->Release();
 int
 main(int argc, char **argv)
 {
-
     int argCount;			// the number of arguments 
 					// for a particular command
 
@@ -127,7 +195,11 @@ main(int argc, char **argv)
       }
     }
 
-    ThreadTest(4);
+#if defined (CHANGED)
+    ThreadTest(testnum); // use the 'testnum' variable (parsed from the command-line options) as the number of threads to fork
+#else
+    ThreadTest();
+#endif
 #endif
 
     for (argc--, argv++; argc > 0; argc -= argCount, argv += argCount) {
@@ -152,6 +224,19 @@ main(int argc, char **argv)
 					// for console input
 	}
 #endif // USER_PROGRAM
+#ifdef HW1_ELEVATOR
+
+    int numberOfFloors = 10;
+    int numberOfElevatorUsers = 10;
+    Elevator(numberOfFloors);
+    int num;
+    for(num = 0; num < numberOfElevatorUsers; num++)
+    {
+        ArrivingGoingFromTo((num * num) % numberOfFloors + 1,
+        (num / num) % numberOfFloors + 1); 
+    }
+    
+#endif
 #ifdef FILESYS
 	if (!strcmp(*argv, "-cp")) { 		// copy from UNIX to Nachos
 	    ASSERT(argc > 2);
