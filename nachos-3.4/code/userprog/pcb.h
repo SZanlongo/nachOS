@@ -1,4 +1,5 @@
 class Thread;
+class Lock;
 
 #ifndef PCB_H
 #define PCB_H
@@ -9,17 +10,13 @@ class Thread;
 
 class PCB {
 	public:
-		PCB(Thread *thread, Thread *parent, int id):t(thread), p(parent), procID(id), childList(NULL){};
+		PCB(Thread *currentThread, Thread *forkedThread, int nextPID);
 		
-		List *childList;
-	
-		int GetID();
-	
-	private:
-		int procID;
-		Thread *t;
-		Thread *p;
+		Thread *parent;
+		Thread *thread;
+		int pid;
 		
+		List *childList;		
 };
 
 #endif

@@ -9,8 +9,13 @@ class AddrSpace;
 class Lock;
 
 class MemoryManager {
-    MemoryManager();
-	BitMap *pages;
+	public:
+		MemoryManager();
+		int totalPages;
+	private:
+		BitMap *pages;
+		Lock *mmLock;
+		int pagesUsed;
 };
 
 #endif

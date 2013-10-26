@@ -186,14 +186,25 @@ void AddrSpace::RestoreState()
 }
 
 AddrSpace::AddrSpace(){
-
 }
 
-AddrSpace *AddrSpace::Fork(int procID) {
-    AddrSpace *fSpace = new AddrSpace();
-    return fSpace;
+AddrSpace *AddrSpace::Duplicate(int pid) {
+    AddrSpace *forkedSpace = new AddrSpace();
+        forkedSpace->pcb = pcb;
+        forkedSpace->numPages = this->numPages;
+        forkedSpace->pageTable = new TranslationEntry[numPages];
+        for (int i = 0; i < numPages; i++) {
+                forkedSpace->pageTable[i].virtualPage = i;
+                forkedSpace->pageTable[i].valid = FALSE;
+                forkedSpace->pageTable[i].use = this->pageTable[i].use;
+                forkedSpace->pageTable[i].dirty = this->pageTable[i].dirty;
+                forkedSpace->pageTable[i].readOnly = this->pageTable[i].readOnly;
+				forkedSpace->pageTable[i].physicalPage = this->pageTable[i].physicalPage;
+        }
+    
+    return forkedSpace;
 }
 
-int AddrSpace::NumberOfPages(){
-    return numberOfPages;
+int AddrSpace::GetNumberPages(){
+    return numPages;
 }

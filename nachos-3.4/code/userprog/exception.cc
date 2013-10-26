@@ -54,15 +54,8 @@
 //	are in machine.h.
 //----------------------------------------------------------------------
 
-void JunkFork(int vAdd) {
-	int *state = (int *) vAdd;
-	for(int i =0; i < NumTotalRegs;i++) {
-		 machine->WriteRegister(i,state[i]);
-	}
-	//in AddrSpace, load pt register
-	currentThread->space->RestoreState();
-	machine->Run();
-}
+void myFork(int);
+void Dummy(int);
 
 void
 ExceptionHandler(ExceptionType which)
@@ -86,42 +79,7 @@ ExceptionHandler(ExceptionType which)
 			}
 			
 			case SC_Fork: {
-				printf("System Call: [%d] invoked Fork\n", currentThread->space->pcb->GetID());
-				
-				ProcessManager *pm = new ProcessManager();
-				//save registers
-				currentThread->space->SaveState();
-				//find next process id and make duplicate addrspace
-				AddrSpace *forkedSpace = currentThread->space->Fork(pm->GetID());
-				
-				Thread *forkedThread = new Thread ("forked thread");
-				
-				int result = machine->ReadRegister(4);
-				//from machine
-				int *state = new int[NumTotalRegs];
-				for (int i = 0; i < NumTotalRegs; i++) {					
-					state[i] = machine->ReadRegister(i);
-				}
-				state[PCReg] = result;
-				state[NextPCReg] = result + 4;
-				
-				PCB *pcb = new PCB(forkedThread, currentThread, pm->GetID());
-				//use sortedinsert from List
-				//add forked thread pcb to child list of parent thread
-				currentThread->space->pcb->childList->SortedInsert((void *)pcb, pcb->GetID());
-				forkedSpace->pcb = pcb;
-				pm->pcbList->SortedInsert((void *)pcb, pcb->GetID());
-				/*
-				Whenever a new process is forked, print the following line: 
-				Process [pid] Fork: start at address [addr] with [numPage] pages memory  
-				where [pid] is the process identifier (SpaceID) of the parent process, [addr] is the virtual address 
-				(in hexadecimal format) of the function that the new (child) process starts to execute and 
-				[numPage] is the number of pages that the new process gets. 
-				*/
-				printf("Process [%d] Fork: start at address [0x%x] with [%d] pages memory\n", currentThread->space->pcb->GetID(), result, forkedSpace->NumberOfPages());
-				
-				forkedThread->Fork(JunkFork, machine->ReadRegister(4));
-				currentThread->Yield();
+				myFork(machine->ReadRegister(4));				
 			    break;
 			}
 			
@@ -134,8 +92,7 @@ ExceptionHandler(ExceptionType which)
 			}
 			
 			case SC_Join: {
-				int result = machine->ReadRegister(4); 
-				machine->WriteRegister(2, result);  
+				
 				break;
 			}
 			
@@ -147,4 +104,53 @@ ExceptionHandler(ExceptionType which)
 	printf("Unexpected user mode exception %d %d\n", which, type);
 	ASSERT(FALSE);
     }
+}
+
+void Dummy(int tempState) {	
+	int* state = (int *) tempState;
+        for(int i = 0; i < NumTotalRegs; i++) {
+            machine->WriteRegister(i, state[i]);
+		}
+        currentThread->space->RestoreState();
+        machine->Run();
+}
+
+void myFork(int vSpace) {
+		printf("System Call: [%d] invoked Fork\n", currentThread->space->pcb->pid);
+		
+		ProcessManager* pm = new ProcessManager();
+		//save old registers
+		currentThread->space->SaveState();
+
+		//find next pid
+		int nextPID = pm->NextPID();
+		//duplicate address space
+		AddrSpace* forkedSpace = currentThread->space->Duplicate(nextPID);
+
+		Thread* forkedThread = new Thread("forked thread");
+	
+		//copy old register values into new thread;
+		int* oldRegisters = new int[NumTotalRegs];
+        for(int i =0; i < NumTotalRegs;i++) {
+            oldRegisters[i] = machine->ReadRegister(i);
+		}
+        oldRegisters[PCReg] = vSpace;
+        oldRegisters[NextPCReg] = vSpace+4;
+
+		PCB* pcb = new PCB(currentThread, forkedThread, nextPID);
+	       
+		//add new thread pcb to child list of current thread
+		currentThread->space->pcb->childList->SortedInsert((void*)pcb, pcb->pid);
+
+		forkedSpace->pcb = pcb;
+		//insert into pcb list (by pid)
+		pm->pcbList->SortedInsert((void*)pcb, pcb->pid);
+
+		printf("Process [%d] Fork: start at address [0x%x] with [%d] pages memory\n", currentThread->space->pcb->pid, vSpace, forkedSpace->GetNumberPages());
+		forkedThread->space = forkedSpace;
+
+		forkedThread->Fork(Dummy, vSpace);
+		
+		machine->WriteRegister(2, nextPID);
+		currentThread->Yield();
 }

@@ -1,3 +1,4 @@
+class AddrSpace;
 // thread.h 
 //	Data structures for managing threads.  A thread represents
 //	sequential execution of code within a program.

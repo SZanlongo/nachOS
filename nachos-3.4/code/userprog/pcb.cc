@@ -1,5 +1,9 @@
 #include "pcb.h"
 
-int PCB::GetID() {
-	return procID;
+PCB::PCB(Thread *currentThread, Thread *forkedThread, int nextPID) {
+    parent = currentThread;
+	thread = forkedThread;
+	pid = nextPID;
+	
+	childList = new List();
 }

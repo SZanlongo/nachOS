@@ -5,17 +5,25 @@
 
 ProcessManager::ProcessManager() {
     pcbList = new List();
+	PIDList = new BitMap(512);
+	//0 is reserved
+	PIDList->Mark(0);
+	PIDsUsed = 0;
 	pmLock = new Lock("process manager lock");
-	idMap = new BitMap(512);
 }
 
-int ProcessManager::GetID() {
-	pmLock->Acquire();
-		int procID = idMap->Find();
-		if (procID >= 0) {
-			occupiedIDs++;
-		}
-	pmLock->Release();
-	
-	return procID;
+int ProcessManager::NextPID() {
+    if (PIDsUsed >= 512) {
+	    return -1;
+	} else {
+		pmLock->Acquire();
+			int pid = PIDList->Find();
+			
+			if (pid >= 0) {
+			    PIDsUsed++;
+			}
+		pmLock->Release();
+
+		return pid;
+	}
 }

@@ -10,13 +10,12 @@ class ProcessManager {
 		List *pcbList;
 		ProcessManager();
 		
-		int GetID();
+		int NextPID();
 	
 	private:
-		BitMap *idMap;
-	    int occupiedIDs;
+		int PIDsUsed;
+		BitMap *PIDList;
 		Lock *pmLock;
-
 };
 
 #endif

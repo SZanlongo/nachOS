@@ -16,10 +16,13 @@
 #include "copyright.h"
 #include "filesys.h"
 
+#include "pcb.h"
+#include "memorymanager.h"
+
 #define UserStackSize		1024 	// increase this as necessary!
 
-class MemoryManager;
 class PCB;
+class MemoryManager;
 
 class AddrSpace {
   public:
@@ -34,17 +37,16 @@ class AddrSpace {
     void SaveState();			// Save/restore address space-specific
     void RestoreState();		// info on a context switch 
 	
-	AddrSpace *Fork(int procID);
+	AddrSpace *Duplicate(int pid);
     PCB *pcb;
-int NumberOfPages();
-
+	int GetNumberPages();
+	
   private:
     TranslationEntry *pageTable;	// Assume linear page table translation
 					// for now!
     unsigned int numPages;		// Number of pages in the virtual 
 					// address space
-    AddrSpace();
-    unsigned int numberOfPages;
+    AddrSpace(); 
 };
 
 #endif // ADDRSPACE_H
