@@ -12,3 +12,5 @@ class MemoryManager {
     MemoryManager();
 	BitMap *pages;
 };
+
+#endif

@@ -1,8 +1,7 @@
 #include "memorymanager.h"
 #include "machine.h"
 
-MemoryManager *MemoryManager::mm = NULL;
-
-MemoryManager::MemoryManager():pages(NumPhysPages) {
+MemoryManager::MemoryManager() {
+    pages = new BitMap(512);
 }
     

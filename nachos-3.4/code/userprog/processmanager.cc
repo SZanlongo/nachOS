@@ -3,13 +3,14 @@
 
 #include "processmanager.h"
 
-ProcessManager *ProcessManager():idMap(NumPhysPages) {
+ProcessManager::ProcessManager() {
     pcbList = new List();
 	pmLock = new Lock("process manager lock");
+	idMap = new BitMap(512);
 }
 
 int ProcessManager::GetID() {
-	pmLock->Aquire();
+	pmLock->Acquire();
 		int procID = idMap->Find();
 		if (procID >= 0) {
 			occupiedIDs++;

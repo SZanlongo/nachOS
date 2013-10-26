@@ -3,6 +3,7 @@
 
 #include "list.h"
 #include "bitmap.h"
+#include "synch.h"
 
 class ProcessManager {
     public:
@@ -14,6 +15,8 @@ class ProcessManager {
 	private:
 		BitMap *idMap;
 	    int occupiedIDs;
+		Lock *pmLock;
+
 };
 
 #endif

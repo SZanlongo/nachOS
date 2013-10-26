@@ -276,6 +276,56 @@ addrspace.o: ../userprog/addrspace.cc ../threads/copyright.h \
   ../threads/list.h ../machine/interrupt.h ../threads/list.h \
   ../machine/stats.h ../machine/timer.h ../filesys/filesys.h \
   ../userprog/addrspace.h ../bin/noff.h
+pcb.o: ../userprog/pcb.cc ../userprog/pcb.h ../threads/thread.h \
+  ../threads/copyright.h ../threads/utility.h ../threads/bool.h \
+  ../machine/sysdep.h ../threads/copyright.h /usr/include/stdio.h \
+  /usr/include/features.h /usr/include/sys/cdefs.h \
+  /usr/include/gnu/stubs.h \
+  /usr/lib/gcc/i386-redhat-linux/3.4.6/include/stddef.h \
+  /usr/include/bits/types.h /usr/include/bits/wordsize.h \
+  /usr/include/bits/typesizes.h /usr/include/libio.h \
+  /usr/include/_G_config.h /usr/include/wchar.h /usr/include/bits/wchar.h \
+  /usr/include/gconv.h ../threads/stdarg.h /usr/include/bits/stdio_lim.h \
+  /usr/include/bits/sys_errlist.h /usr/include/string.h \
+  /usr/include/xlocale.h ../machine/machine.h ../threads/utility.h \
+  ../machine/translate.h ../machine/disk.h ../userprog/addrspace.h \
+  ../threads/copyright.h ../filesys/filesys.h ../threads/copyright.h \
+  ../filesys/openfile.h ../threads/utility.h ../userprog/bitmap.h \
+  ../threads/utility.h ../filesys/openfile.h ../threads/list.h
+processmanager.o: ../userprog/processmanager.cc \
+  ../userprog/processmanager.h ../threads/list.h ../threads/copyright.h \
+  ../threads/utility.h ../threads/bool.h ../machine/sysdep.h \
+  ../threads/copyright.h /usr/include/stdio.h /usr/include/features.h \
+  /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h \
+  /usr/lib/gcc/i386-redhat-linux/3.4.6/include/stddef.h \
+  /usr/include/bits/types.h /usr/include/bits/wordsize.h \
+  /usr/include/bits/typesizes.h /usr/include/libio.h \
+  /usr/include/_G_config.h /usr/include/wchar.h /usr/include/bits/wchar.h \
+  /usr/include/gconv.h ../threads/stdarg.h /usr/include/bits/stdio_lim.h \
+  /usr/include/bits/sys_errlist.h /usr/include/string.h \
+  /usr/include/xlocale.h ../userprog/bitmap.h ../threads/copyright.h \
+  ../threads/utility.h ../filesys/openfile.h ../threads/copyright.h \
+  ../threads/utility.h ../threads/synch.h ../threads/thread.h \
+  ../machine/machine.h ../threads/utility.h ../machine/translate.h \
+  ../machine/disk.h ../userprog/addrspace.h ../filesys/filesys.h \
+  ../filesys/openfile.h ../threads/list.h
+memorymanager.o: ../userprog/memorymanager.cc ../userprog/memorymanager.h \
+  ../userprog/addrspace.h ../threads/copyright.h ../filesys/filesys.h \
+  ../threads/copyright.h ../filesys/openfile.h ../threads/utility.h \
+  ../threads/copyright.h ../threads/bool.h ../machine/sysdep.h \
+  ../threads/copyright.h /usr/include/stdio.h /usr/include/features.h \
+  /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h \
+  /usr/lib/gcc/i386-redhat-linux/3.4.6/include/stddef.h \
+  /usr/include/bits/types.h /usr/include/bits/wordsize.h \
+  /usr/include/bits/typesizes.h /usr/include/libio.h \
+  /usr/include/_G_config.h /usr/include/wchar.h /usr/include/bits/wchar.h \
+  /usr/include/gconv.h ../threads/stdarg.h /usr/include/bits/stdio_lim.h \
+  /usr/include/bits/sys_errlist.h /usr/include/string.h \
+  /usr/include/xlocale.h ../threads/synch.h ../threads/thread.h \
+  ../threads/utility.h ../machine/machine.h ../threads/utility.h \
+  ../machine/translate.h ../machine/disk.h ../userprog/addrspace.h \
+  ../threads/list.h ../userprog/bitmap.h ../threads/utility.h \
+  ../filesys/openfile.h ../machine/machine.h
 bitmap.o: ../userprog/bitmap.cc ../threads/copyright.h \
   ../userprog/bitmap.h ../threads/utility.h ../threads/copyright.h \
   ../threads/bool.h ../machine/sysdep.h ../threads/copyright.h \
@@ -308,7 +358,8 @@ exception.o: ../userprog/exception.cc ../threads/copyright.h \
   ../machine/stats.h ../machine/timer.h ../filesys/filesys.h \
   ../userprog/syscall.h ../userprog/addrspace.h ../userprog/pcb.h \
   ../threads/thread.h ../userprog/bitmap.h ../threads/utility.h \
-  ../filesys/openfile.h ../threads/list.h ../userprog/processmanager.h
+  ../filesys/openfile.h ../threads/list.h ../userprog/processmanager.h \
+  ../threads/synch.h
 progtest.o: ../userprog/progtest.cc ../threads/copyright.h \
   ../threads/system.h ../threads/copyright.h ../threads/utility.h \
   ../threads/bool.h ../machine/sysdep.h ../threads/copyright.h \
