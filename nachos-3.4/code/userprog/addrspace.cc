@@ -184,3 +184,16 @@ void AddrSpace::RestoreState()
     machine->pageTable = pageTable;
     machine->pageTableSize = numPages;
 }
+
+AddrSpace::AddrSpace(){
+
+}
+
+AddrSpace *AddrSpace::Fork(int procID) {
+    AddrSpace *fSpace = new AddrSpace();
+    return fSpace;
+}
+
+int AddrSpace::NumberOfPages(){
+    return numberOfPages;
+}

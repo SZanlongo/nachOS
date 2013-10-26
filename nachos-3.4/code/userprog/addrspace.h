@@ -18,6 +18,9 @@
 
 #define UserStackSize		1024 	// increase this as necessary!
 
+class MemoryManager;
+class PCB;
+
 class AddrSpace {
   public:
     AddrSpace(OpenFile *executable);	// Create an address space,
@@ -30,12 +33,18 @@ class AddrSpace {
 
     void SaveState();			// Save/restore address space-specific
     void RestoreState();		// info on a context switch 
+	
+	AddrSpace *Fork(int procID);
+    PCB *pcb;
+int NumberOfPages();
 
   private:
     TranslationEntry *pageTable;	// Assume linear page table translation
 					// for now!
     unsigned int numPages;		// Number of pages in the virtual 
 					// address space
+    AddrSpace();
+    unsigned int numberOfPages;
 };
 
 #endif // ADDRSPACE_H

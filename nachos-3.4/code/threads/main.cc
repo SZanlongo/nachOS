@@ -58,14 +58,36 @@ extern int testnum;
 #endif
 
 // External functions used by this file
-#if defined(CHANGED)
-extern void ThreadTest(int n), Copy(char *unixFile, char *nachosFile);
-#else
-extern void ThreadTest(void), Copy(char *unixFile, char *nachosFile);
-#endif
+
+extern void ThreadTest(int numberOfThreads), Copy(char *unixFile, char *nachosFile);
 extern void Print(char *file), PerformanceTest(void);
 extern void StartProcess(char *file), ConsoleTest(char *in, char *out);
 extern void MailTest(int networkID);
+
+#ifdef HW1_Elevator
+Lock* elevatorIsActiveLock = new Lock("elevatorIsActiveLock");
+bool elevatorIsActive;
+int numFloor; 
+void Elevator(int numFloors) {
+
+elevatorIsActiveLock->Acquire();
+bool elevatorIsActive = true;
+elevatorIsActiveLock->Release();
+
+}
+
+void ArrivingGoingFromTo(int atFloor, int toFloor) {
+
+elevatorIsActiveLock->Acquire();
+if (!elevatorIsActive){
+    Thread* elevatorThread = new Thread("Elevator Thread");
+    elevatorThread->Fork((void*)Elevator,numFloor); 
+    elevatorIsActive = true;
+}
+elevatorIsActiveLock->Release();
+
+}
+#endif
 
 //----------------------------------------------------------------------
 // main
@@ -84,6 +106,7 @@ extern void MailTest(int networkID);
 int
 main(int argc, char **argv)
 {
+
     int argCount;			// the number of arguments 
 					// for a particular command
 
@@ -104,11 +127,7 @@ main(int argc, char **argv)
       }
     }
 
-#if defined (CHANGED)
-    ThreadTest(testnum); // use the 'testnum' variable (parsed from the command-line options) as the number of threads to fork
-#else
-    ThreadTest();
-#endif
+    ThreadTest(4);
 #endif
 
     for (argc--, argv++; argc > 0; argc -= argCount, argv += argCount) {

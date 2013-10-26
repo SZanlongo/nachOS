@@ -25,6 +25,12 @@
 #include "system.h"
 #include "syscall.h"
 
+#include "addrspace.h"
+#include "filesys.h"
+
+#include "pcb.h"
+#include "processmanager.h"
+
 //----------------------------------------------------------------------
 // ExceptionHandler
 // 	Entry point into the Nachos kernel.  Called when a user program
@@ -48,14 +54,95 @@
 //	are in machine.h.
 //----------------------------------------------------------------------
 
+void JunkFork(int vAdd) {
+	int *state = (int *) vAdd;
+	for(int i =0; i < NumTotalRegs;i++) {
+		 machine->WriteRegister(i,state[i]);
+	}
+	//in AddrSpace, load pt register
+	currentThread->space->RestoreState();
+	machine->Run();
+}
+
 void
 ExceptionHandler(ExceptionType which)
 {
     int type = machine->ReadRegister(2);
 
-    if ((which == SyscallException) && (type == SC_Halt)) {
-	DEBUG('a', "Shutdown, initiated by user program.\n");
-   	interrupt->Halt();
+	/*
+	Which system call is called? Whenever a system call is invoked, print: 
+	System Call: [pid] invoked [call]  
+	where [pid] is the identifier of the process (SpaceID) and [call] is the name of one of the system 
+	calls that you had to implement. Just give the name without parentheses (e.g., Fork, Create, 
+	Exit). 
+	*/
+	
+	if(which == SyscallException) {
+	    switch(type) {
+		    case SC_Halt: {
+				DEBUG('a', "Shutdown, initiated by user program.\n");
+				interrupt->Halt();
+				break;
+			}
+			
+			case SC_Fork: {
+				printf("System Call: [%d] invoked Fork\n", currentThread->space->pcb->GetID());
+				
+				ProcessManager *pm = new ProcessManager();
+				//save registers
+				currentThread->space->SaveState();
+				//find next process id and make duplicate addrspace
+				AddrSpace *forkedSpace = currentThread->space->Fork(pm->GetID());
+				
+				Thread *forkedThread = new Thread ("forked thread");
+				
+				int result = machine->ReadRegister(4);
+				//from machine
+				int *state = new int[NumTotalRegs];
+				for (int i = 0; i < NumTotalRegs; i++) {					
+					state[i] = machine->ReadRegister(i);
+				}
+				state[PCReg] = result;
+				state[NextPCReg] = result + 4;
+				
+				PCB *pcb = new PCB(forkedThread, currentThread, pm->GetID());
+				//use sortedinsert from List
+				//add forked thread pcb to child list of parent thread
+				currentThread->space->pcb->childList->SortedInsert((void *)pcb, pcb->GetID());
+				forkedSpace->pcb = pcb;
+				pm->pcbList->SortedInsert((void *)pcb, pcb->GetID());
+				/*
+				Whenever a new process is forked, print the following line: 
+				Process [pid] Fork: start at address [addr] with [numPage] pages memory  
+				where [pid] is the process identifier (SpaceID) of the parent process, [addr] is the virtual address 
+				(in hexadecimal format) of the function that the new (child) process starts to execute and 
+				[numPage] is the number of pages that the new process gets. 
+				*/
+				printf("Process [%d] Fork: start at address [0x%x] with [%d] pages memory\n", currentThread->space->pcb->GetID(), result, forkedSpace->NumberOfPages());
+				
+				forkedThread->Fork(JunkFork, machine->ReadRegister(4));
+				currentThread->Yield();
+			    break;
+			}
+			
+			case SC_Yield: {
+			    break;
+			}
+			
+			case SC_Exec: {
+				break;
+			}
+			
+			case SC_Join: {
+				int result = machine->ReadRegister(4); 
+				machine->WriteRegister(2, result);  
+				break;
+			}
+			
+			case SC_Exit: {
+				break;
+			}
+		}
     } else {
 	printf("Unexpected user mode exception %d %d\n", which, type);
 	ASSERT(FALSE);
