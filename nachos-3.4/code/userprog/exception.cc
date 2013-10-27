@@ -54,8 +54,9 @@
 //	are in machine.h.
 //----------------------------------------------------------------------
 
-void myFork(int);
-void Dummy(int);
+void myFork (int);
+int myJoin (int);
+void Dummy (int);
 
 void
 ExceptionHandler(ExceptionType which)
@@ -92,7 +93,8 @@ ExceptionHandler(ExceptionType which)
 			}
 			
 			case SC_Join: {
-				
+				int result = myJoin(machine->ReadRegister(4));
+                machine->WriteRegister(2, result);
 				break;
 			}
 			
@@ -153,4 +155,16 @@ void myFork(int vSpace) {
 		
 		machine->WriteRegister(2, nextPID);
 		currentThread->Yield();
+}
+
+int myJoin(int prog) {
+    printf("System Call: %d invoked Join\n", currentThread->space->pcb->pid);
+    
+	PCB *cPCB = (PCB *) currentThread->space->pcb->FindChild(prog);
+	
+	if (cPCB == NULL) {
+		return -1;
+	} else {
+		return cPCB->exit;
+	}
 }

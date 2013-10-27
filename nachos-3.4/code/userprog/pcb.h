@@ -15,8 +15,10 @@ class PCB {
 		Thread *parent;
 		Thread *thread;
 		int pid;
+		int exit;
 		
-		List *childList;		
+		List *childList;
+		void *FindChild(int child);
 };
 
 #endif
