@@ -17,3 +17,7 @@ void *PCB::FindChild(int child) {
 	}
 	return NULL;
 }
+
+void *PCB::DeleteChild (int child) {
+	return childList->SortedRemove(child);
+}

@@ -18,7 +18,8 @@ class PCB {
 		int exit;
 		
 		List *childList;
-		void *FindChild(int child);
+		void *FindChild (int child);
+		void *DeleteChild (int child);
 };
 
 #endif

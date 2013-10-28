@@ -85,6 +85,7 @@ ExceptionHandler(ExceptionType which)
 			}
 			
 			case SC_Yield: {
+				myYield();
 			    break;
 			}
 			
@@ -99,6 +100,7 @@ ExceptionHandler(ExceptionType which)
 			}
 			
 			case SC_Exit: {
+				myExit(machine->ReadRegister(4));
 				break;
 			}
 		}
@@ -117,7 +119,7 @@ void Dummy(int tempState) {
         machine->Run();
 }
 
-void myFork(int vSpace) {
+void myFork (int vSpace) {
 		printf("System Call: [%d] invoked Fork\n", currentThread->space->pcb->pid);
 		
 		ProcessManager* pm = new ProcessManager();
@@ -157,7 +159,7 @@ void myFork(int vSpace) {
 		currentThread->Yield();
 }
 
-int myJoin(int prog) {
+int myJoin (int prog) {
     printf("System Call: %d invoked Join\n", currentThread->space->pcb->pid);
     
 	PCB *cPCB = (PCB *) currentThread->space->pcb->FindChild(prog);
@@ -167,4 +169,36 @@ int myJoin(int prog) {
 	} else {
 		return cPCB->exit;
 	}
+}
+
+void myYield () {
+	printf("System Call: %d invoked Yield\n", currentThread->space->pcb->pid);
+	
+	currentThread->Yield();
+}
+
+void myExit (int exs) {
+	printf("System Call: %d invoked Exit\n", currentThread->space->pcb->pid);
+    printf("Process %d exits with %d\n", currentThread->space->pcb->pid, exs);
+	
+	//process has a parent
+	if (currentThread->space->pcb->parent != NULL) {
+		//delete from list
+		currentThread->space->pcb->parent->space->pcb->DeleteChild(currentThread->space->pcb->pid);
+		//change exit status
+		currentThread->space->pcb->exit = currentThread->space->pcb->parent->space->pcb->pid;
+	}
+	
+	ProcessManager *pm = new ProcessManager();	
+	//remove PCB for PCBList, and also remove the pid
+	pm->Remove(currentThread->space->pcb->pid);
+	pm->DeletePID(currentThread->space->pcb->pid);	
+	
+    pm->Broadcast(currentThread->space->pcb->pid);
+    
+	//clear pages
+	delete currentThread->space;	
+	currentThread->space = NULL;
+	
+    currentThread->Finish();
 }

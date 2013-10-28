@@ -27,3 +27,14 @@ int ProcessManager::NextPID() {
 		return pid;
 	}
 }
+
+void *ProcessManager::Remove(int pcb) {
+	return pcbList->Remove(pcb);
+}
+
+void *ProcessManager::DeletePID(int pid) {
+	if (PIDsUsed > 0) {
+		PIDList->Clear(pid);
+		PIDsUsed--;
+	}
+}
