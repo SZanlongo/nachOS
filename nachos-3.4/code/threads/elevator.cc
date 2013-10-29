@@ -1,5 +1,15 @@
 #include "elevator.h"
 
+ElevatorSynchronization elevatorSynchronization = { new Condition("Arrived to new Floor condition."),
+                                 new Condition("Attempt to enter elevator condition."),
+                                 new Condition("Elevator users entered elevator condition."),
+                                 new Condition("Elevator is active condition."),
+                                 new Lock("Lock for elevator request."), 
+                                 new Lock("Lock for entering elevator."),
+                                 new Lock("Lock for closing elevator door."),
+                                 new Lock("Lock for current capacity."),
+                                 new Lock("Lock for the current floor.")};
+
 // Creates an instance of an Elevator object with the specified number of floors.
 SimpleElevator::SimpleElevator(int amountOfFloors) {
 
@@ -91,23 +101,15 @@ SimpleElevator::ElevatorDirection(){ // Gets the elevator direction, an elevator
 void 
 SimpleElevator::RequestElevator(int floor){ //Requests an elevator.
 
-    elevatorSynchronization.elevatorRequestsLock->Acquire();
-
     numberOfElevatorRequest++;
     requestPerFloor[floor - 1]++;
-
-    elevatorSynchronization.elevatorRequestsLock->Release();
 }
 
 void 
 SimpleElevator::RemoveElevatorRequest(int floor) { // Removes an elevator request.
 
-    elevatorSynchronization.elevatorRequestsLock->Acquire();
-
     numberOfElevatorRequest--;
     requestPerFloor[floor - 1]--;
-
-    elevatorSynchronization.elevatorRequestsLock->Release();
 }
 
 ElevatorDirection 

@@ -1,5 +1,3 @@
-#ifndef HW1_Elevator
-#define HW1_Elevator
 #include "synch.h"
 
 enum ElevatorDirection {UP, DOWN};
@@ -14,7 +12,7 @@ struct ElevatorUser {
 
 
 // A struct to maintina elevator synchronization mechanisms.
-struct {
+struct ElevatorSynchronization {
     Condition* arrivedToNewFloor;
     Condition* attemptToEnterElevator;
     Condition* elevatorUsersEnteredElevator;
@@ -24,16 +22,9 @@ struct {
     Lock* closeDoorLock;
     Lock* currentCapacityLock;
     Lock* currentFloorLock;
- }  elevatorSynchronization =  { new Condition("Arrived to new Floor condition."),
-                                 new Condition("Attempt to enter elevator condition."),
-                                 new Condition("Elevator users entered elevator condition."),
-                                 new Condition("Elevator is active condition."),
-                                 new Lock("Lock for elevator request."), 
-                                 new Lock("Lock for entering elevator."),
-                                 new Lock("Lock for closing elevator door."),
-                                 new Lock("Lock for current capacity."),
-                                 new Lock("Lock for the current floor.")};
+ };
 
+extern ElevatorSynchronization elevatorSynchronization;
 
 // A class to represent an elevator. An elevator satisfies request to take elevator users from one floor to another.
 class SimpleElevator {
@@ -60,5 +51,3 @@ private:
     int * requestPerFloor; // Number of request per floor.
     enum ElevatorDirection elevatorDirection; // The direction the elevator is heading. Either up or down.
 };
-
-#endif //HW1_Elevator

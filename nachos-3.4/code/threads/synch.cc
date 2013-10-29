@@ -97,7 +97,6 @@ Semaphore::V()
     (void) interrupt->SetLevel(oldLevel);
 }
 
-#if defined(HW1_LOCKS) || defined(HW1_CONDITIONS)
 Lock::Lock(char* debugName) {
     name = debugName;
     currentHolder = NULL;
@@ -131,17 +130,17 @@ void Lock::Release() {
     
     interrupt->SetLevel(oldLevel);	// re-enable interrupts
 }
-#else
-// Dummy functions -- so we can compile our later assignments 
-// Note -- without a correct implementation of Condition::Wait(), 
-// the test case in the network assignment won't work!
-Lock::Lock(char* debugName) {}
-Lock::~Lock() {}
-void Lock::Acquire() {}
-void Lock::Release() {}
-#endif
+//#else
+//// Dummy functions -- so we can compile our later assignments 
+//// Note -- without a correct implementation of Condition::Wait(), 
+//// the test case in the network assignment won't work!
+//Lock::Lock(char* debugName) {}
+//Lock::~Lock() {}
+//void Lock::Acquire() {}
+//void Lock::Release() {}
+//#endif
 
-#if defined(HW1_CONDITIONS)
+//#if defined(HW1_CONDITIONS)
 Condition::Condition(char* debugName) {
     name = debugName;
     waitingQueue = new List;
@@ -217,10 +216,10 @@ void Condition::Broadcast(Lock* conditionLock) {
     
     interrupt->SetLevel(oldLevel);	// re-enable interrupts
 }
-#else
-Condition::Condition(char* debugName) { }
-Condition::~Condition() { }
-void Condition::Wait(Lock* conditionLock) { }
-void Condition::Signal(Lock* conditionLock) { }
-void Condition::Broadcast(Lock* conditionLock) { }
-#endif
+//#else
+//Condition::Condition(char* debugName) { }
+//Condition::~Condition() { }
+//void Condition::Wait(Lock* conditionLock) { }
+//void Condition::Signal(Lock* conditionLock) { }
+//void Condition::Broadcast(Lock* conditionLock) { }
+//#endif

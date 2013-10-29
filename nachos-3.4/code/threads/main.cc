@@ -46,6 +46,8 @@
 // All rights reserved.  See copyright.h for copyright notice and limitation 
 // of liability and disclaimer of warranty provisions.
 
+#define HW1_Elevator
+#define HW1_LOCKS
 #define MAIN
 #include "copyright.h"
 #undef MAIN
@@ -70,6 +72,7 @@ extern void MailTest(int networkID);
 
 #ifdef HW1_Elevator
 SimpleElevator* elevator;
+int done = 2;
 
 void StartElevator(int numFloors) {
 
@@ -80,21 +83,22 @@ void StartElevator(int numFloors) {
     while(true){
         elevatorSynchronization.elevatorRequestsLock->Acquire();
 
-        while(elevator->GetNumberOfElevatorRequest()) {
+        while(elevator->GetNumberOfElevatorRequest() == 0) {
             elevatorSynchronization.elevatorIsActive->Wait(elevatorSynchronization.elevatorRequestsLock);
         }
 
         elevatorSynchronization.elevatorRequestsLock->Release();
 
         elevator->MoveFloors();
-        printf("Elevator arrives on floor %d.", elevator->GetCurrentFloor());
+        printf("Elevator arrives on floor %d.\n", elevator->GetCurrentFloor());
         elevator->OpenAndCloseDoors();
+        done--;
     }
 }
 
 void Elevator(int numFloors) {
 
-    Thread *t = new Thread("Elevator Threads");
+    Thread *t = new Thread("Elevator Thread.");
 
     t->Fork(StartElevator, numFloors);
 }
@@ -102,11 +106,15 @@ void Elevator(int numFloors) {
 
 void StartArrivingGoingFromTo(int elevatorUser) {
     
-    int atFloor = ((ElevatorUser*)elevatorUser)->fromFloor;
-    int toFloor = ((ElevatorUser*)elevatorUser)->toFloor;
-    int id = ((ElevatorUser*)elevatorUser)->id;
+//    int atFloor = ((ElevatorUser*)elevatorUser)->fromFloor;
+//    int toFloor = ((ElevatorUser*)elevatorUser)->toFloor;
+//    int id = ((ElevatorUser*)elevatorUser)->id;
 
-    printf("Person %d wants to go to floor %d from floor %d.", id, toFloor, atFloor);
+    int atFloor = elevatorUser + 1; 
+    int toFloor = elevatorUser + 2; 
+    int id = elevatorUser;
+
+    printf("Person %d wants to go to floor %d from floor %d.\n", id, toFloor, atFloor);
     ElevatorDirection direction = atFloor - toFloor < 0 ? UP : DOWN;
 
     elevatorSynchronization.elevatorRequestsLock->Acquire();
@@ -124,10 +132,11 @@ void StartArrivingGoingFromTo(int elevatorUser) {
         elevatorSynchronization.attemptToEnterElevator->Wait(elevatorSynchronization.currentFloorLock);
         elevatorSynchronization.currentCapacityLock->Acquire();
     }
+
     elevatorSynchronization.currentFloorLock->Release();
 
     elevator->DecrementElevatorCapacity();
-    printf("Person %d got into the elevator.", id);
+    printf("Person %d got into the elevator.\n", id);
     elevatorSynchronization.currentCapacityLock->Release();
 
     elevatorSynchronization.currentFloorLock->Acquire();
@@ -142,7 +151,7 @@ void StartArrivingGoingFromTo(int elevatorUser) {
 
     elevatorSynchronization.currentCapacityLock->Acquire();
     elevator->IncrementElevatorCapacity();
-    printf("Person %d got out of the elevator..", id);
+    printf("Person %d got out of the elevator.\n", id);
     elevatorSynchronization.currentCapacityLock->Release();
 }
 
@@ -153,8 +162,8 @@ void ArrivingGoingFromTo(int fromFloor, int toFloor){
         elevatorUser.fromFloor = fromFloor;
         elevatorUser.toFloor = toFloor;
         elevatorUser.id = ++id;
-        Thread* t = new Thread("Elevator User.");
-        t->Fork(StartArrivingGoingFromTo, &elevatorUser);
+        Thread* t = new Thread("Elevator User.\n");
+        t->Fork(StartArrivingGoingFromTo, id);
 }
 #endif
 
@@ -176,10 +185,11 @@ int
 main(int argc, char **argv)
 {
     int argCount;			// the number of arguments 
-					// for a particular command
+                            // for a particular command
 
     DEBUG('t', "Entering main");
     (void) Initialize(argc, argv);
+
     
 #ifdef THREADS
     for (argc--, argv++; argc > 0; argc -= argCount, argv += argCount) {
@@ -194,13 +204,14 @@ main(int argc, char **argv)
         break;
       }
     }
+#endif
 
-#if defined (CHANGED)
-    ThreadTest(testnum); // use the 'testnum' variable (parsed from the command-line options) as the number of threads to fork
-#else
-    ThreadTest();
-#endif
-#endif
+//#if defined (CHANGED)
+//    ThreadTest(testnum); // use the 'testnum' variable (parsed from the command-line options) as the number of threads to fork
+//#else
+//    ThreadTest();
+//#endif
+//#endif
 
     for (argc--, argv++; argc > 0; argc -= argCount, argv += argCount) {
 	argCount = 1;
@@ -224,19 +235,7 @@ main(int argc, char **argv)
 					// for console input
 	}
 #endif // USER_PROGRAM
-#ifdef HW1_ELEVATOR
-
-    int numberOfFloors = 10;
-    int numberOfElevatorUsers = 10;
-    Elevator(numberOfFloors);
-    int num;
-    for(num = 0; num < numberOfElevatorUsers; num++)
-    {
-        ArrivingGoingFromTo((num * num) % numberOfFloors + 1,
-        (num / num) % numberOfFloors + 1); 
-    }
     
-#endif
 #ifdef FILESYS
 	if (!strcmp(*argv, "-cp")) { 		// copy from UNIX to Nachos
 	    ASSERT(argc > 2);
@@ -270,6 +269,16 @@ main(int argc, char **argv)
 #endif // NETWORK
     }
 
+//    int numberOfFloors = 2;
+//    int numberOfElevatorUsers = 2;
+//    Elevator(numberOfFloors);
+//    int num;
+//    for(num = 1; num <= numberOfElevatorUsers; num++)
+//    {
+//        ArrivingGoingFromTo((num * num) % numberOfFloors + 1,
+//        (num / num) % numberOfFloors + 1); 
+//    }
+//while(done > 0){currentThread->Yield();}
     currentThread->Finish();	// NOTE: if the procedure "main" 
 				// returns, then the program "nachos"
 				// will exit (as any other normal program
