@@ -17,7 +17,6 @@
 #include "system.h"
 
 static void Mult(int a, int b, bool signedArith, int* hiPtr, int* loPtr);
-
 //----------------------------------------------------------------------
 // Machine::Run
 // 	Simulate the execution of a user-level program on Nachos.
@@ -533,6 +532,7 @@ Machine::OneInstruction(Instruction *instr)
     	
       case OP_SYSCALL:
 	RaiseException(SyscallException, 0);
+    this->IncrementPCRegisters(4);
 	return; 
 	
       case OP_XOR:
@@ -689,4 +689,13 @@ Mult(int a, int b, bool signedArith, int* hiPtr, int* loPtr)
     
     *hiPtr = (int) hi;
     *loPtr = (int) lo;
+}
+
+void 
+Machine::IncrementPCRegisters(int amountIncrementPCNext){
+
+    registers[PrevPCReg] = registers[PCReg];	// for debugging, in case we
+						// are jumping into lala-land
+    registers[PCReg] = registers[NextPCReg];
+    registers[NextPCReg] += amountIncrementPCNext;
 }

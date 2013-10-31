@@ -145,7 +145,8 @@ class Machine {
 
     void Debugger();		// invoke the user program debugger
     void DumpState();		// print the user CPU and memory state 
-
+    void IncrementPCRegisters(int amountIncrementPCNext); // Sets PCPrev to PCReg, PCReg to PCNext and 
+                                                          // PCNext to PCNext + amountIncrementPCNext.
 
 // Data structures -- all of these are accessible to Nachos kernel code.
 // "public" for convenience.

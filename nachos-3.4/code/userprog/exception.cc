@@ -47,17 +47,113 @@
 //	"which" is the kind of exception.  The list of possible exceptions 
 //	are in machine.h.
 //----------------------------------------------------------------------
+void 
+myFork(int addressSpace);
+
+void 
+myYield();
+
+void 
+myExec(int addressSpace);
+
+void 
+myJoin(int addressSpace);
+
+void
+myExit(int addressSpace);
+
+void 
+ExecuteSystemCall(int typeOfSysCall);
 
 void
 ExceptionHandler(ExceptionType which)
 {
     int type = machine->ReadRegister(2);
 
-    if ((which == SyscallException) && (type == SC_Halt)) {
-	DEBUG('a', "Shutdown, initiated by user program.\n");
-   	interrupt->Halt();
-    } else {
-	printf("Unexpected user mode exception %d %d\n", which, type);
-	ASSERT(FALSE);
+// old code
+//    if ((which == SyscallException) && (type == SC_Halt)) {
+//	DEBUG('a', "Shutdown, initiated by user program.\n");
+//   	interrupt->Halt();
+//    } else {
+//	printf("Unexpected user mode exception %d %d\n", which, type);
+//	ASSERT(FALSE);
+//    }
+    if(which == SyscallException){
+        ExecuteSystemCall(type);
     }
+    else {
+    	printf("Unexpected user mode exception %d %d\n", which, type);
+    	ASSERT(FALSE);
+    }
+}
+
+void ExecuteSystemCall(int typeOfSysCall){
+
+    int result;
+    switch(typeOfSysCall){
+
+     case SC_Halt:
+         interrupt->Halt();
+         break;
+     
+     case SC_Fork:
+         myFork(machine->ReadRegister(4));
+//         interrupt->Halt();
+         break;
+
+     case SC_Yield:
+         myYield();
+//         interrupt->Halt();
+         break;
+     
+     case SC_Exec:
+         myExec(machine->ReadRegister(4));
+//         interrupt->Halt();
+         break;
+
+     case SC_Join:
+         myJoin(machine->ReadRegister(4));
+//         interrupt->Halt();
+         break;
+
+     case SC_Exit:
+         myExit(machine->ReadRegister(4));
+         interrupt->Halt();
+         break;
+    }
+}
+
+void 
+myFork(int addressSpace){
+
+    printf("Forking.\n");
+	DEBUG('a', "My fork test.\n");
+}
+
+void
+myYield(){
+
+    printf("Yielding.\n");
+	DEBUG('a', "My yield test.\n");
+}
+
+void
+myExec(int addressSpace){
+
+    printf("Executing.\n");
+	DEBUG('a', "My executing test.\n");
+}
+
+void
+myJoin(int addressSpace){ 
+
+    printf("Joining.\n");
+	DEBUG('a', "My join test.\n");
+}
+
+void
+myExit(int addressSpace){
+
+    printf("Exiting.\n");
+	DEBUG('a', "My exiting test.\n");
 }
