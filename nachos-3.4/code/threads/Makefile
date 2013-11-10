@@ -31,7 +31,8 @@ main.o: ../threads/main.cc ../threads/copyright.h ../threads/utility.h \
   /usr/include/xlocale.h ../threads/system.h ../threads/thread.h \
   ../threads/scheduler.h ../threads/list.h ../machine/interrupt.h \
   ../threads/list.h ../machine/stats.h ../machine/timer.h \
-  ../threads/utility.h ../threads/elevator.h ../threads/synch.h
+  ../threads/utility.h ../threads/elevator.h ../threads/synch.h \
+  ../threads/threadtest.cc
 elevator.o: ../threads/elevator.cc ../threads/elevator.h \
   ../threads/synch.h ../threads/copyright.h ../threads/thread.h \
   ../threads/utility.h ../threads/bool.h ../machine/sysdep.h \

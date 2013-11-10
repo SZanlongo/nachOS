@@ -79,11 +79,9 @@ public:
 
 private:
 	char* name;				// for debugging
-	// plus some other stuff you'll need to define
-	int value;         // lock value, always >= 0
-	List *queue;       // threads waiting in P() for the value to be > 
-	Thread *currentHolder; // thread holding "X"
-	Semaphore* semaphore; // thread holding "X"
+    bool isAvailable; // True if lock is available(ie. The lock can be accquired.)
+    Thread* currentLockHolder; // The thread that is currently holding the lock.
+    List * waitingForLockQueue; // List of threads waiting for lock,
 };
 
 // The following class defines a "condition variable".  A condition
@@ -135,7 +133,7 @@ public:
 
 private:
 	char* name;
-	List* waitingQueue;
+    List * waitingForConditionQueue; // List of threads waiting for lock,
 	// plus some other stuff you'll need to define
 };
 #endif // SYNCH_H

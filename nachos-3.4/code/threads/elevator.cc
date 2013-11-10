@@ -65,6 +65,7 @@ SimpleElevator::MoveFloors() {                       // Moves elevator a floor c
         currentFloor --;
     }
 
+    // TODO: Might want to add an else if on line 73.
     if(elevatorDirection == UP && currentFloor == numberOfFloors){
         elevatorDirection = DOWN;
     }

@@ -9,12 +9,13 @@
 // All rights reserved.  See copyright.h for copyright notice and limitation 
 // of liability and disclaimer of warranty provisions.
 
-#define HW1_Locks
+#define HW1_LOCKS
 #include "copyright.h"
 #include "system.h"
 #include "synch.h"
 // testnum is set in main.cc
 int testnum = 1;
+Lock* threadLock;
 
 //----------------------------------------------------------------------
 // SimpleThread
@@ -26,8 +27,8 @@ int testnum = 1;
 //----------------------------------------------------------------------
 
 int SharedVariable; 
-int currentRunningThreads;
-#ifdef HW1_Semaphores
+int amountOfForkedThreads;
+#ifdef HW1_SEMAPHORES
 Semaphore * semaphore;
 
 void SimpleThread(int which) { 
@@ -49,8 +50,8 @@ void SimpleThread(int which) {
         currentThread->Yield(); 
     } 
 
-    currentRunningThreads--;
-    while(currentRunningThreads)
+    amountOfForkedThreads--;
+    while(amountOfForkedThreads)
     {
         currentThread->Yield();
     }
@@ -58,11 +59,23 @@ void SimpleThread(int which) {
     val = SharedVariable; 
     printf("Thread %d sees final value %d\n", which, val); 
 }
-#elif defined(HW1_Locks)
-Lock* threadLock; 
+#elif defined(HW1_LOCKS)
+// Spend some time possibly adding all these variables to a struct.
+Lock* amountNotReadyForFinalOutputLock = new Lock("Amount not ready for final output lock.");
+
+Condition* readyForFinalOutputCondition = new Condition("Ready for final output condition.");
+
+Lock* numberOfForkedThreadsDoneLock = new Lock("Number of forked threads done lock.");
+
+Condition* allForkedThreadsDoneCondition = new Condition("All forked threads done condition.");
+
+int amountNotReadyForFinalOutput;
+
+int numberOfForkedThreadsDone = 0;
+
 void SimpleThread(int which){
 
-    int num, val; 
+    int num;
 
     if(threadLock == NULL)
     {
@@ -70,24 +83,33 @@ void SimpleThread(int which){
     }
 
     for(num = 0; num < 5; num++) { 
-
         threadLock->Acquire();
-        val = SharedVariable;
-        printf("*** thread %d sees value %d\n", which, val); 
-        currentThread->Yield();
-        SharedVariable = val + 1;
+        printf("*** thread %d sees value %d\n", which, SharedVariable); 
+        SharedVariable += 1;
         threadLock->Release();
         currentThread->Yield(); 
     } 
 
-    currentRunningThreads--;
-    while(currentRunningThreads)
-    {
-        currentThread->Yield();
+    amountNotReadyForFinalOutputLock->Acquire();
+
+    amountNotReadyForFinalOutput--;
+    while(amountNotReadyForFinalOutput > 0) {
+        readyForFinalOutputCondition->Wait(amountNotReadyForFinalOutputLock);
     }
 
-    val = SharedVariable; 
-    printf("Thread %d sees final value %d\n", which, val); 
+    readyForFinalOutputCondition->Broadcast(amountNotReadyForFinalOutputLock);
+    amountNotReadyForFinalOutputLock->Release();
+
+    printf("Thread %d sees final value %d\n", which, SharedVariable); 
+
+    numberOfForkedThreadsDoneLock->Acquire();
+    numberOfForkedThreadsDone++;
+
+    if (numberOfForkedThreadsDone == amountOfForkedThreads) {
+        allForkedThreadsDoneCondition->Signal(numberOfForkedThreadsDoneLock);
+    }
+
+    numberOfForkedThreadsDoneLock->Release();
 }
 
 #else
@@ -108,14 +130,14 @@ SimpleThread(int which)
 // 	Set up a ping-pong between two threads, by forking a thread 
 //	to call SimpleThread, and then calling SimpleThread ourselves.
 //----------------------------------------------------------------------
-#ifdef HW1_Semaphores
+#ifdef HW1_SEMAPHORES
 void
 ThreadTest1(int numberOfThreads)
 {
     DEBUG('t', "Entering ThreadTest1");
 
     int num;
-    currentRunningThreads = numberOfThreads + 1;
+    amountOfForkedThreads = numberOfThreads + 1;
 
     for(num = 0; num < numberOfThreads; num++)
     {
@@ -128,25 +150,29 @@ ThreadTest1(int numberOfThreads)
         SimpleThread(0);
     }
 }
-#elif defined(HW1_Locks)
+#elif defined(HW1_LOCKS)
 void
 ThreadTest1(int numberOfThreads)
 {
     DEBUG('t', "Entering ThreadTest1");
 
     int num;
-    currentRunningThreads = numberOfThreads + 1;
+    amountOfForkedThreads = amountNotReadyForFinalOutput = numberOfThreads;
 
     for(num = 0; num < numberOfThreads; num++)
     {
-        Thread *t = new Thread("forked thread");
+        Thread *t = new Thread("forked thread 1");
 
         t->Fork(SimpleThread, num + 1);
     }
-    if(numberOfThreads >= 0)
-    {
-        SimpleThread(0);
+
+    numberOfForkedThreadsDoneLock->Acquire();
+    
+    while(numberOfForkedThreadsDone < amountOfForkedThreads) {
+        allForkedThreadsDoneCondition->Wait(numberOfForkedThreadsDoneLock);
     }
+
+    numberOfForkedThreadsDoneLock->Release();
 }
 #else
 void
@@ -165,7 +191,7 @@ ThreadTest1()
 // 	Invoke a test routine.
 //----------------------------------------------------------------------
 
-#ifdef HW1_Semaphores
+#ifdef HW1_SEMAPHORES
 void
 ThreadTest(int numberOfThreads)
 {
@@ -178,11 +204,11 @@ ThreadTest(int numberOfThreads)
 	break;
     }
 }
-#elif defined(HW1_Locks)
+#elif defined(HW1_LOCKS)
 void
 ThreadTest(int numberOfThreads)
 {
-    switch (testnum) {
+   switch (testnum) {
     case 1:
 	ThreadTest1(numberOfThreads);
     break;

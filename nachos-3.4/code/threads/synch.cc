@@ -99,33 +99,47 @@ Semaphore::V()
 
 Lock::Lock(char* debugName) {
     name = debugName;
-    currentHolder = NULL;
-    semaphore = new Semaphore("Lock_Implementing_Semaphore", 1);
+    currentLockHolder = NULL;
+    isAvailable = true;
+    waitingForLockQueue = new List();
 }
 
 Lock::~Lock() {
-    delete semaphore;
+    delete waitingForLockQueue;
 }
 
 void Lock::Acquire() {
     IntStatus oldLevel = interrupt->SetLevel(IntOff);	// disable interrupts
     
-    semaphore->P();                 // acquire the "lock"
-    currentHolder = currentThread;  // remember who acquired it
+    if(isAvailable) {
+        isAvailable = false; 
+        currentLockHolder = currentThread;  // remember who acquired it
+    }
+    else {
+        waitingForLockQueue->Append((void*)currentThread);
+        currentThread->Sleep();
+    }
     
     interrupt->SetLevel(oldLevel);	// re-enable interrupts
 }
 
 bool Lock::isHeldByCurrentThread() {
-    return (currentHolder == currentThread);
+    return (currentLockHolder == currentThread);
 }
 
 void Lock::Release() {
     IntStatus oldLevel = interrupt->SetLevel(IntOff);	// disable interrupts
     
     if (this->isHeldByCurrentThread()) { // only the owner of the lock can release it
-        semaphore->V();         // release the lock
-        currentHolder = NULL;   // since the lock is free, there is no owner
+
+        if (waitingForLockQueue->IsEmpty()){
+            isAvailable = true;
+            currentLockHolder = NULL;
+        }
+        else {
+            currentLockHolder = (Thread*)waitingForLockQueue->Remove();
+            scheduler->ReadyToRun(currentLockHolder);
+        }
     }
     
     interrupt->SetLevel(oldLevel);	// re-enable interrupts
@@ -143,11 +157,11 @@ void Lock::Release() {
 //#if defined(HW1_CONDITIONS)
 Condition::Condition(char* debugName) {
     name = debugName;
-    waitingQueue = new List;
+    waitingForConditionQueue = new List;
 }
 
 Condition::~Condition() {
-    delete waitingQueue;
+    delete waitingForConditionQueue;
 }
 
 void Condition::Wait(Lock* conditionLock) {
@@ -161,8 +175,8 @@ void Condition::Wait(Lock* conditionLock) {
     DEBUG('t', "\tCondition::Wait(): lock released, appending '%s' to wait queue\n", currentThread->getName());
     
     // thread waits to be signaled and gives up the CPU
-    waitingQueue->Append((void*)currentThread);
-    currentThread->Yield();
+    waitingForConditionQueue->Append((void*)currentThread);
+    currentThread->Sleep();
     
     // resume once signaled and re-acquire the lock
     DEBUG('t', "\tCondition::Wait(): '%s' acquiring lock...\n", currentThread->getName());
@@ -175,27 +189,15 @@ void Condition::Wait(Lock* conditionLock) {
 void Condition::Signal(Lock* conditionLock) {
     IntStatus oldLevel = interrupt->SetLevel(IntOff);	// disable interrupts
     
-    DEBUG('t', "\tCondition::Signal(): thread '%s' entered\n", currentThread->getName());
-    
-    // requirement is that the current thread must own the lock before continuing on
-    while (!conditionLock->isHeldByCurrentThread()) {
-        currentThread->Yield();
-    }
-    conditionLock->Release();
-    DEBUG('t', "\tCondition::Signal(): thread '%s' had lock and released it\n", currentThread->getName());
-    
+    // TODO: While the first condition in line 195 ensures that the current thread holds 
+    // TODO: the lock that is passed in it does not ensure that the locked that is 
+    // TODO: passed in is the same one that the sleeping thread is waiting on.
+
     // check if there is a thread to signal
-    if (!waitingQueue->IsEmpty()) {
-        Thread *wakeUpThread = (Thread*) waitingQueue->Remove();
-        
-        if (wakeUpThread == currentThread) wakeUpThread = (Thread*) waitingQueue->Remove();
-        
-        // if a valid waiting thread is found, signal it by making it ready to run
-        // this uses a first-come, first-serve approach
-        if (wakeUpThread != NULL) {
-            scheduler->ReadyToRun(wakeUpThread);
-        }
-    } else DEBUG('t', "\tCondition::Signal(): for thread '%s', waiting queue is empty\n", currentThread->getName());
+    if (conditionLock->isHeldByCurrentThread() && !waitingForConditionQueue->IsEmpty()) {
+        Thread *wakeUpThread = (Thread*) waitingForConditionQueue->Remove();
+        scheduler->ReadyToRun(wakeUpThread);
+    } 
     
     interrupt->SetLevel(oldLevel);	// re-enable interrupts
 }
@@ -203,15 +205,17 @@ void Condition::Signal(Lock* conditionLock) {
 void Condition::Broadcast(Lock* conditionLock) {
     IntStatus oldLevel = interrupt->SetLevel(IntOff);	// disable interrupts
     
-    // requirement (from header file) is that the current thread must own the lock before continuing on
-    while (!conditionLock->isHeldByCurrentThread()) {
-        currentThread->Yield();
-    }
-    
+    // TODO: While the first condition in line 212  ensures that the current thread holds 
+    // TODO: the lock that is passed in it does not ensure that the locked that is 
+    // TODO: passed in is the same one that the sleeping thread is waiting on.
+
     // implement a broadcast by signaling EVERY waiting thread
     // note that a side effect of Signal() is that a thread is popped from the list
-    while (!waitingQueue->IsEmpty()) {
-        Signal(conditionLock);
+    if (conditionLock->isHeldByCurrentThread()){
+        while (!waitingForConditionQueue->IsEmpty()) {
+            Thread *wakeUpThread = (Thread*) waitingForConditionQueue->Remove();
+            scheduler->ReadyToRun(wakeUpThread);
+        }
     }
     
     interrupt->SetLevel(oldLevel);	// re-enable interrupts

@@ -46,7 +46,6 @@
 // All rights reserved.  See copyright.h for copyright notice and limitation 
 // of liability and disclaimer of warranty provisions.
 
-#define HW1_Elevator
 #define HW1_LOCKS
 #define MAIN
 #include "copyright.h"
@@ -62,7 +61,7 @@ extern int testnum;
 
 // External functions used by this file
 #if defined(CHANGED)
-extern void ThreadTest(int n), Copy(char *unixFile, char *nachosFile);
+void ThreadTest(int n), Copy(char *unixFile, char *nachosFile);
 #else
 extern void ThreadTest(void), Copy(char *unixFile, char *nachosFile);
 #endif
@@ -204,14 +203,13 @@ main(int argc, char **argv)
         break;
       }
     }
-#endif
 
-//#if defined (CHANGED)
-//    ThreadTest(testnum); // use the 'testnum' variable (parsed from the command-line options) as the number of threads to fork
-//#else
-//    ThreadTest();
-//#endif
-//#endif
+#if defined (CHANGED)
+    ThreadTest(3); // use the 'testnum' variable (parsed from the command-line options) as the number of threads to fork
+#else
+    ThreadTest();
+#endif
+#endif
 
     for (argc--, argv++; argc > 0; argc -= argCount, argv += argCount) {
 	argCount = 1;
