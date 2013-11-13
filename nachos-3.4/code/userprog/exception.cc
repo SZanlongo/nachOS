@@ -31,6 +31,10 @@
 #include "pcb.h"
 #include "processmanager.h"
 
+#include "sysopenfile.h"
+#include "useropenfile.h"
+#include "filemanager.h"
+
 //----------------------------------------------------------------------
 // ExceptionHandler
 // 	Entry point into the Nachos kernel.  Called when a user program
@@ -54,15 +58,76 @@
 //	are in machine.h.
 //----------------------------------------------------------------------
 
-void myFork (int);
-int myJoin (int);
-void Dummy (int);
+char *clone(char *original) {
+    char *newChar = new char[128];
+
+    for (int i = 0; i < 128; i++) {
+        newChar[i] = original[i];
+        if (original[i] == NULL) {
+            break;
+        }
+    }
+
+    return newChar;
+}
+
+void myCreate(char *fileName) {
+	printf("System Call: [%d] invoked Create\n", currentThread->space->pcb->pid);
+	
+	int path = machine->ReadRegister(4);
+	
+	int hold;
+	int i = 0;
+	
+	while (hold != NULL) {
+		machine->ReadMem(path, 1, &hold);
+		fileName[i++] = (char) hold++;
+	}
+	
+	fileSystem->Create(fileName, 0);
+}
+
+OpenFileId myOpen(char *fileName) {
+    printf("System Call: [%d] invoked Open\n", currentThread->space->pcb->pid);
+
+    int index = 0;
+    SysOpenFile *sysoFile = FileManager->Get(fileName, index);
+    
+    if (sysoFile == NULL) {
+        OpenFile *openFile = fileSystem->Open(fileName);
+        SysOpenFile *sysFile;
+        sysFile->openFile = openFile;
+        sysFile->nUsers = 1;
+        sysFile->fileName = clone(fileName);
+        index = FileManager->Add(sysFile);
+    } else {
+        sysoFile->nUsers++;
+    }
+
+    UserOpenFile useroFile();
+    useroFile->index = index;
+    useroFile->offset = 0;
+    OpenFileId openFileID = currentThread->space->pcb->Add(useroFile);
+    return openFileID;
+}
+
+void myRead() {
+	printf("System Call: [%d] invoked Read\n", currentThread->space->pcb->pid);
+}
+
+void myWrite() {
+	printf("System Call: [%d] invoked Write\n", currentThread->space->pcb->pid);
+}
+
+void myClose() {
+	printf("System Call: [%d] invoked Close\n", currentThread->space->pcb->pid);
+}
 
 void
 ExceptionHandler(ExceptionType which)
 {
     int type = machine->ReadRegister(2);
-
+    char *fileName = new char[128];
 	/*
 	Which system call is called? Whenever a system call is invoked, print: 
 	System Call: [pid] invoked [call]  
@@ -80,12 +145,12 @@ ExceptionHandler(ExceptionType which)
 			}
 			
 			case SC_Fork: {
-				myFork(machine->ReadRegister(4));				
+							
 			    break;
 			}
 			
 			case SC_Yield: {
-				myYield();
+				
 			    break;
 			}
 			
@@ -94,111 +159,36 @@ ExceptionHandler(ExceptionType which)
 			}
 			
 			case SC_Join: {
-				int result = myJoin(machine->ReadRegister(4));
-                machine->WriteRegister(2, result);
+				
 				break;
 			}
 			
 			case SC_Exit: {
-				myExit(machine->ReadRegister(4));
+				
+				break;
+			} case SC_Open: {
+                                
+                                clone(fileName);
+				int ans = myOpen(fileName);
+                                machine->WriteRegister(2, ans);
+				break;
+			}case SC_Create: {
+				myCreate(fileName);
+				break;
+			}case SC_Read: {
+				myRead();
+				break;
+			}case SC_Write: {
+				myWrite();
+				break;
+			}case SC_Close: {
+				myClose();
 				break;
 			}
+
 		}
     } else {
 	printf("Unexpected user mode exception %d %d\n", which, type);
 	ASSERT(FALSE);
     }
-}
-
-void Dummy(int tempState) {	
-	int* state = (int *) tempState;
-        for(int i = 0; i < NumTotalRegs; i++) {
-            machine->WriteRegister(i, state[i]);
-		}
-        currentThread->space->RestoreState();
-        machine->Run();
-}
-
-void myFork (int vSpace) {
-		printf("System Call: [%d] invoked Fork\n", currentThread->space->pcb->pid);
-		
-		ProcessManager* pm = new ProcessManager();
-		//save old registers
-		currentThread->space->SaveState();
-
-		//find next pid
-		int nextPID = pm->NextPID();
-		//duplicate address space
-		AddrSpace* forkedSpace = currentThread->space->Duplicate(nextPID);
-
-		Thread* forkedThread = new Thread("forked thread");
-	
-		//copy old register values into new thread;
-		int* oldRegisters = new int[NumTotalRegs];
-        for(int i =0; i < NumTotalRegs;i++) {
-            oldRegisters[i] = machine->ReadRegister(i);
-		}
-        oldRegisters[PCReg] = vSpace;
-        oldRegisters[NextPCReg] = vSpace+4;
-
-		PCB* pcb = new PCB(currentThread, forkedThread, nextPID);
-	       
-		//add new thread pcb to child list of current thread
-		currentThread->space->pcb->childList->SortedInsert((void*)pcb, pcb->pid);
-
-		forkedSpace->pcb = pcb;
-		//insert into pcb list (by pid)
-		pm->pcbList->SortedInsert((void*)pcb, pcb->pid);
-
-		printf("Process [%d] Fork: start at address [0x%x] with [%d] pages memory\n", currentThread->space->pcb->pid, vSpace, forkedSpace->GetNumberPages());
-		forkedThread->space = forkedSpace;
-
-		forkedThread->Fork(Dummy, vSpace);
-		
-		machine->WriteRegister(2, nextPID);
-		currentThread->Yield();
-}
-
-int myJoin (int prog) {
-    printf("System Call: %d invoked Join\n", currentThread->space->pcb->pid);
-    
-	PCB *cPCB = (PCB *) currentThread->space->pcb->FindChild(prog);
-	
-	if (cPCB == NULL) {
-		return -1;
-	} else {
-		return cPCB->exit;
-	}
-}
-
-void myYield () {
-	printf("System Call: %d invoked Yield\n", currentThread->space->pcb->pid);
-	
-	currentThread->Yield();
-}
-
-void myExit (int exs) {
-	printf("System Call: %d invoked Exit\n", currentThread->space->pcb->pid);
-    printf("Process %d exits with %d\n", currentThread->space->pcb->pid, exs);
-	
-	//process has a parent
-	if (currentThread->space->pcb->parent != NULL) {
-		//delete from list
-		currentThread->space->pcb->parent->space->pcb->DeleteChild(currentThread->space->pcb->pid);
-		//change exit status
-		currentThread->space->pcb->exit = currentThread->space->pcb->parent->space->pcb->pid;
-	}
-	
-	ProcessManager *pm = new ProcessManager();	
-	//remove PCB for PCBList, and also remove the pid
-	pm->Remove(currentThread->space->pcb->pid);
-	pm->DeletePID(currentThread->space->pcb->pid);	
-	
-    pm->Broadcast(currentThread->space->pcb->pid);
-    
-	//clear pages
-	delete currentThread->space;	
-	currentThread->space = NULL;
-	
-    currentThread->Finish();
 }
