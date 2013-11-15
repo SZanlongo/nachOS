@@ -106,6 +106,7 @@ FILESYS_H =../filesys/directory.h \
 	../filesys/synchdisk.h\
 	../filesys/useropenfile.h\
 	../filesys/sysopenfile.h\
+	../filesys/filemanager.h\
 	../machine/disk.h
 FILESYS_C =../filesys/directory.cc\
 	../filesys/filehdr.cc\
@@ -115,9 +116,10 @@ FILESYS_C =../filesys/directory.cc\
 	../filesys/synchdisk.cc\
 	../filesys/useropenfile.cc\
 	../filesys/sysopenfile.cc\
+	../filesys/filemanager.cc\
 	../machine/disk.cc
 FILESYS_O =directory.o filehdr.o filesys.o fstest.o openfile.o synchdisk.o\
-	disk.o useropenfile.o sysopenfile.o
+	disk.o useropenfile.o sysopenfile.o filemanager.o
 
 NETWORK_H = ../network/post.h ../machine/network.h
 NETWORK_C = ../network/nettest.cc ../network/post.cc ../machine/network.cc

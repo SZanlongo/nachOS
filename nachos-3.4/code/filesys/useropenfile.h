@@ -6,7 +6,7 @@ class UserOpenFile {
 		char *fileName;
 		int index;
 		int offset;
-		UserOpenFile();
+		UserOpenFile(char *name, int in, int off);
 };
 
 #endif

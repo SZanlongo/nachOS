@@ -34,10 +34,11 @@ extern Timer *timer;				// the hardware alarm clock
 extern Machine* machine;	// user program memory and registers
 
 #include "sysopenfile.h"
+#include "filemanager.h"
 
 #define READ 0
 #define WRITE 1
-extern SysOpenFileManager *fileManager;
+extern FileManager *fileManager;
 int ReadWrite (int vaddr, char *buffer, int size, int which);
 
 #endif

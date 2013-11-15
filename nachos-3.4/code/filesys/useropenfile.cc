@@ -1,5 +1,7 @@
 #include "useropenfile.h"
 
-UserOpenFile::UserOpenFile() {
-    
+UserOpenFile(char *name, int in, int off) {
+    fileName = name;
+	index = in;
+	offset = off;
 }

@@ -30,7 +30,7 @@ SynchDisk   *synchDisk;
 
 #ifdef USER_PROGRAM	// requires either FILESYS or FILESYS_STUB
 Machine *machine;	// user program memory and registers
-SysOpenFileManager *fileManager;
+FileManager *fileManager;
 
 int ReadWrite (int vaddr, char *buffer, int size, int which) {
 	int physical;

@@ -91,25 +91,19 @@ OpenFileId myOpen(char *fileName) {
     printf("System Call: [%d] invoked Open\n", currentThread->space->pcb->pid);
 
     int index = 0;
+	int offset = 0;
+	
     SysOpenFile *soFile = fileManager->Get(fileName, index);
 //	int index = 0;
 	if (soFile != NULL) {
 		soFile->userOpens++;
 	} else {
-		OpenFile *oFile = fileSystem->Open(fileName);
-		
-		if (oFile == NULL) {
-			return -1;
-		}
-		
+		OpenFile *oFile = fileSystem->Open(fileName);		
 		soFile = new SysOpenFile (fileName, 0, oFile);
 		index = fileManager->Add(soFile);
 	}
 	
-	UserOpenFile *uoFile = new UserOpenFile();
-	uoFile->fileName = copyChar(fileName);
-	uoFile->index = index;
-	uoFile->offset = 0;
+	UserOpenFile *uoFile = new UserOpenFile(copyChar(fileName), index, offset);
 	
 	return currentThread->space->pcb->Add(uoFile);
 }
@@ -127,9 +121,7 @@ int myRead(int buffAdd, int size, OpenFileId ofID) {
 	} else {
 		UserOpenFile *uoFile = currentThread->space->pcb->Get(ofID);
 		
-		if (uoFile == NULL) {
-			return -1;
-		} else {
+		if (uoFile != NULL) {
 			//should acquire lock here
 			SysOpenFile *soFile = fileManager->Get(uoFile->index);
 			newSize = soFile->openFile->ReadAt(buffer, size, uoFile->offset);
@@ -137,7 +129,6 @@ int myRead(int buffAdd, int size, OpenFileId ofID) {
 		}
 		
 		ReadWrite (buffAdd, buffer, newSize, READ);
-		delete[] buffer;
 		
 		return newSize;
 	}
@@ -147,36 +138,37 @@ void myWrite(int buffAdd, int size, OpenFileId ofID) {
 	printf("System Call: [%d] invoked Write\n", currentThread->space->pcb->pid);
 	
 	char *buffer = new char[size + 1];
+	int writeSize;
 	
 	if (ofID == ConsoleOutput) {
 		ReadWrite (buffAdd, buffer, size, WRITE);
-		buffer[size] = 0;
+		buffer[size] = '\0'';
 		printf("%s", buffer);		
 	} else {
 		buffer = new char[size];
-		int writeSize = ReadWrite(buffAdd, buffer, size, WRITE);
+		writeSize = ReadWrite(buffAdd, buffer, size, WRITE);
 		UserOpenFile *uoFile = currentThread->space->pcb->Get(ofID);
 		
-		if (uoFile == NULL) {
-			return;
-		} else {
+		if (uoFile != NULL) {
 			SysOpenFile *soFile = fileManager->Get(uoFile->index);
 			int bytes = soFile->openFile->WriteAt(buffer, size, uoFile->offset);
 			uoFile->offset += bytes;
 		}
 	}
-	delete[] buffer;
 }
 
 void myClose(OpenFileId ofID) {
 	printf("System Call: [%d] invoked Close\n", currentThread->space->pcb->pid);
 	
-	UserOpenFile *uoFile = currentThread->space->pcb->Get(ofID);
-	if (uoFile == NULL) {
+	if (ofID < 2) {
 		return;
-	} else {
-		SysOpenFile *soFile = fileManager->Get(uoFile->index);
-		currentThread->space->pcb->Remove(ofID);
+	} else {	
+		UserOpenFile *uoFile = currentThread->space->pcb->Get(ofID);
+		
+		if (uoFile != NULL) {
+			SysOpenFile *soFile = fileManager->Get(uoFile->index);
+			currentThread->space->pcb->Remove(ofID);
+		}		
 	}
 }
 
@@ -241,30 +233,32 @@ ExceptionHandler(ExceptionType which)
 			}
 			
 			case SC_Read: {
-				int arg1 = machine->ReadRegister(4);
-				int arg2 = machine->ReadRegister(5);
-				int arg3 = machine->ReadRegister(6);
-				machine->WriteRegister(2, myRead(arg1, arg2, arg3));
+				int buffAdd = machine->ReadRegister(4);
+				int size = machine->ReadRegister(5);
+				int id = machine->ReadRegister(6);
+				machine->WriteRegister(2, myRead(buffAdd, size, id));
 				
 				break;
 			}
 			
 			case SC_Write: {
-				int arg1 = machine->ReadRegister(4);
-				int arg2 = machine->ReadRegister(5);
-				int arg3 = machine->ReadRegister(6);
-				myWrite(arg1, arg2, arg3);
+				int buff = machine->ReadRegister(4);
+				int size = machine->ReadRegister(5);
+				int id = machine->ReadRegister(6);
+				myWrite(buff, size, id);
+				
 				break;
 			}
 			
 			case SC_Close: {
 				myClose(machine->ReadRegister(4));
+				
 				break;
 			}
 
 		}
     } else {
-	printf("Unexpected user mode exception %d %d\n", which, type);
-	ASSERT(FALSE);
+		printf("Unexpected user mode exception %d %d\n", which, type);
+		ASSERT(FALSE);
     }
 }
