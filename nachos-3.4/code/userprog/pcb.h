@@ -8,6 +8,8 @@ class Lock;
 #include "bitmap.h"
 #include "list.h"
 
+#include "useropenfile.h"
+
 class PCB {
 	public:
 		PCB(Thread *currentThread, Thread *forkedThread, int nextPID);
@@ -19,7 +21,12 @@ class PCB {
 		
 		List *childList;
 		void *FindChild (int child);
-		void *DeleteChild (int child);
+		
+		UserOpenFile *openFiles[128];
+		int Add(UserOpenFile *uoFile);
+		bool Remove(int fileID);
+		UserOpenFile *Get(int fileID);
+		BitMap *fileMap;
 };
 
 #endif

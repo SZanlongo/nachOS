@@ -32,6 +32,14 @@ extern Timer *timer;				// the hardware alarm clock
 #ifdef USER_PROGRAM
 #include "machine.h"
 extern Machine* machine;	// user program memory and registers
+
+#include "sysopenfile.h"
+
+#define READ 0
+#define WRITE 1
+extern SysOpenFileManager *fileManager;
+int ReadWrite (int vaddr, char *buffer, int size, int which);
+
 #endif
 
 #ifdef FILESYS_NEEDED 		// FILESYS or FILESYS_STUB 
@@ -50,3 +58,4 @@ extern PostOffice* postOffice;
 #endif
 
 #endif // SYSTEM_H
+

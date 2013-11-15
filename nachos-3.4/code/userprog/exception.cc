@@ -33,7 +33,6 @@
 
 #include "sysopenfile.h"
 #include "useropenfile.h"
-#include "filemanager.h"
 
 //----------------------------------------------------------------------
 // ExceptionHandler
@@ -58,7 +57,18 @@
 //	are in machine.h.
 //----------------------------------------------------------------------
 
-char *clone(char *original) {
+void GetName(char *fileName) {
+	int pos = 0;
+	int i;
+	int arg = machine->ReadRegister(4);
+	while (i != NULL) {
+		machine->ReadMem(arg, 1, &i);
+		fileName[pos++] = (char) i;
+		arg++;
+	}
+}
+
+char *copyChar(char *original) {
     char *newChar = new char[128];
 
     for (int i = 0; i < 128; i++) {
@@ -74,16 +84,6 @@ char *clone(char *original) {
 void myCreate(char *fileName) {
 	printf("System Call: [%d] invoked Create\n", currentThread->space->pcb->pid);
 	
-	int path = machine->ReadRegister(4);
-	
-	int hold;
-	int i = 0;
-	
-	while (hold != NULL) {
-		machine->ReadMem(path, 1, &hold);
-		fileName[i++] = (char) hold++;
-	}
-	
 	fileSystem->Create(fileName, 0);
 }
 
@@ -91,36 +91,93 @@ OpenFileId myOpen(char *fileName) {
     printf("System Call: [%d] invoked Open\n", currentThread->space->pcb->pid);
 
     int index = 0;
-    SysOpenFile *sysoFile = FileManager->Get(fileName, index);
-    
-    if (sysoFile == NULL) {
-        OpenFile *openFile = fileSystem->Open(fileName);
-        SysOpenFile *sysFile;
-        sysFile->openFile = openFile;
-        sysFile->nUsers = 1;
-        sysFile->fileName = clone(fileName);
-        index = FileManager->Add(sysFile);
-    } else {
-        sysoFile->nUsers++;
-    }
-
-    UserOpenFile useroFile();
-    useroFile->index = index;
-    useroFile->offset = 0;
-    OpenFileId openFileID = currentThread->space->pcb->Add(useroFile);
-    return openFileID;
+    SysOpenFile *soFile = fileManager->Get(fileName, index);
+//	int index = 0;
+	if (soFile != NULL) {
+		soFile->userOpens++;
+	} else {
+		OpenFile *oFile = fileSystem->Open(fileName);
+		
+		if (oFile == NULL) {
+			return -1;
+		}
+		
+		soFile = new SysOpenFile (fileName, 0, oFile);
+		index = fileManager->Add(soFile);
+	}
+	
+	UserOpenFile *uoFile = new UserOpenFile();
+	uoFile->fileName = copyChar(fileName);
+	uoFile->index = index;
+	uoFile->offset = 0;
+	
+	return currentThread->space->pcb->Add(uoFile);
 }
 
-void myRead() {
+int myRead(int buffAdd, int size, OpenFileId ofID) {
 	printf("System Call: [%d] invoked Read\n", currentThread->space->pcb->pid);
+	
+	char *buffer = new char[size + 1];
+	int newSize = size;
+	
+	if (ofID == ConsoleInput) {
+		for (int i = 0; i < size; i++) {
+			buffer[i] = getchar();
+		}
+	} else {
+		UserOpenFile *uoFile = currentThread->space->pcb->Get(ofID);
+		
+		if (uoFile == NULL) {
+			return -1;
+		} else {
+			//should acquire lock here
+			SysOpenFile *soFile = fileManager->Get(uoFile->index);
+			newSize = soFile->openFile->ReadAt(buffer, size, uoFile->offset);
+			//should release lock here			
+		}
+		
+		ReadWrite (buffAdd, buffer, newSize, READ);
+		delete[] buffer;
+		
+		return newSize;
+	}
 }
 
-void myWrite() {
+void myWrite(int buffAdd, int size, OpenFileId ofID) {
 	printf("System Call: [%d] invoked Write\n", currentThread->space->pcb->pid);
+	
+	char *buffer = new char[size + 1];
+	
+	if (ofID == ConsoleOutput) {
+		ReadWrite (buffAdd, buffer, size, WRITE);
+		buffer[size] = 0;
+		printf("%s", buffer);		
+	} else {
+		buffer = new char[size];
+		int writeSize = ReadWrite(buffAdd, buffer, size, WRITE);
+		UserOpenFile *uoFile = currentThread->space->pcb->Get(ofID);
+		
+		if (uoFile == NULL) {
+			return;
+		} else {
+			SysOpenFile *soFile = fileManager->Get(uoFile->index);
+			int bytes = soFile->openFile->WriteAt(buffer, size, uoFile->offset);
+			uoFile->offset += bytes;
+		}
+	}
+	delete[] buffer;
 }
 
-void myClose() {
+void myClose(OpenFileId ofID) {
 	printf("System Call: [%d] invoked Close\n", currentThread->space->pcb->pid);
+	
+	UserOpenFile *uoFile = currentThread->space->pcb->Get(ofID);
+	if (uoFile == NULL) {
+		return;
+	} else {
+		SysOpenFile *soFile = fileManager->Get(uoFile->index);
+		currentThread->space->pcb->Remove(ofID);
+	}
 }
 
 void
@@ -144,13 +201,11 @@ ExceptionHandler(ExceptionType which)
 				break;
 			}
 			
-			case SC_Fork: {
-							
+			case SC_Fork: {							
 			    break;
 			}
 			
-			case SC_Yield: {
-				
+			case SC_Yield: {				
 			    break;
 			}
 			
@@ -158,31 +213,52 @@ ExceptionHandler(ExceptionType which)
 				break;
 			}
 			
-			case SC_Join: {
+			case SC_Join: {				
+				break;
+			}
+			
+			case SC_Exit: {				
+				break;
+			}
+			
+			case SC_Open: {                                
+                GetName(fileName);
+				OpenFileId index = myOpen(fileName);
+				if (index != -1) {
+					machine->WriteRegister(2, index);
+				} else {
+					printf("Can't open file");
+				}
 				
 				break;
 			}
 			
-			case SC_Exit: {
+			case SC_Create: {	
+				GetName(fileName);
+				myCreate(fileName);
 				
 				break;
-			} case SC_Open: {
-                                
-                                clone(fileName);
-				int ans = myOpen(fileName);
-                                machine->WriteRegister(2, ans);
+			}
+			
+			case SC_Read: {
+				int arg1 = machine->ReadRegister(4);
+				int arg2 = machine->ReadRegister(5);
+				int arg3 = machine->ReadRegister(6);
+				machine->WriteRegister(2, myRead(arg1, arg2, arg3));
+				
 				break;
-			}case SC_Create: {
-				myCreate(fileName);
+			}
+			
+			case SC_Write: {
+				int arg1 = machine->ReadRegister(4);
+				int arg2 = machine->ReadRegister(5);
+				int arg3 = machine->ReadRegister(6);
+				myWrite(arg1, arg2, arg3);
 				break;
-			}case SC_Read: {
-				myRead();
-				break;
-			}case SC_Write: {
-				myWrite();
-				break;
-			}case SC_Close: {
-				myClose();
+			}
+			
+			case SC_Close: {
+				myClose(machine->ReadRegister(4));
 				break;
 			}
 

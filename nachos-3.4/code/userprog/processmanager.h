@@ -9,7 +9,8 @@ class ProcessManager {
     public:
 		List *pcbList;
 		ProcessManager();
-		
+		void *ProcessManager::DeletePID(int pid);
+		//void *ProcessManager::Remove(int pcb);
 		int NextPID();
 	
 	private:

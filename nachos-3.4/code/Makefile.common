@@ -93,7 +93,7 @@ USERPROG_C = ../userprog/addrspace.cc\
 	../machine/translate.cc
 
 USERPROG_O = addrspace.o pcb.o processmanager.o memorymanager.o bitmap.o exception.o progtest.o console.o machine.o \
-	mipssim.o translate.o
+	mipssim.o translate.o 
 
 VM_H = 
 VM_C = 
@@ -104,6 +104,8 @@ FILESYS_H =../filesys/directory.h \
 	../filesys/filesys.h \
 	../filesys/openfile.h\
 	../filesys/synchdisk.h\
+	../filesys/useropenfile.h\
+	../filesys/sysopenfile.h\
 	../machine/disk.h
 FILESYS_C =../filesys/directory.cc\
 	../filesys/filehdr.cc\
@@ -111,9 +113,11 @@ FILESYS_C =../filesys/directory.cc\
 	../filesys/fstest.cc\
 	../filesys/openfile.cc\
 	../filesys/synchdisk.cc\
+	../filesys/useropenfile.cc\
+	../filesys/sysopenfile.cc\
 	../machine/disk.cc
 FILESYS_O =directory.o filehdr.o filesys.o fstest.o openfile.o synchdisk.o\
-	disk.o
+	disk.o useropenfile.o sysopenfile.o
 
 NETWORK_H = ../network/post.h ../machine/network.h
 NETWORK_C = ../network/nettest.cc ../network/post.cc ../machine/network.cc

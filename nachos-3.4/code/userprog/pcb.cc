@@ -18,6 +18,30 @@ void *PCB::FindChild(int child) {
 	return NULL;
 }
 
-void *PCB::DeleteChild (int child) {
-	return childList->SortedRemove(child);
+int PCB::Add(UserOpenFile *uoFile) {
+	int index = fileMap->Find();
+	
+	if (index > -1) {
+		openFiles[index] = uoFile;
+	}
+	
+	return index;
+}
+
+UserOpenFile *PCB::Get(int id) {
+	if (fileMap->Test(id)) {
+		return openFiles[id];
+	} else {
+		return NULL;
+	}
+}
+
+bool PCB::Remove(int id) {
+	if (fileMap->Test(id)) {
+		delete openFiles[id];
+		fileMap->Clear(id);
+		return true;
+	} else {
+		return false;
+	}
 }

@@ -7,6 +7,7 @@
 
 #include "copyright.h"
 #include "system.h"
+#include "../filesys/filesys.h"
 
 // This defines *all* of the global data structures used by Nachos.
 // These are all initialized and de-allocated by this file.
@@ -29,6 +30,35 @@ SynchDisk   *synchDisk;
 
 #ifdef USER_PROGRAM	// requires either FILESYS or FILESYS_STUB
 Machine *machine;	// user program memory and registers
+SysOpenFileManager *fileManager;
+
+int ReadWrite (int vaddr, char *buffer, int size, int which) {
+	int physical;
+	int pageSize;
+	int copy;
+	int bytes = 0;
+		
+	while (size > 0) {
+		machine->Translate(vaddr, &physical, size, FALSE);
+		pageSize = PageSize - (physical) % PageSize;
+		copy = min(pageSize, size);
+		
+		if (which == READ) {
+			bcopy(buffer + bytes, machine->mainMemory + physical, copy);
+		}
+		
+		if (which == WRITE) {
+			bcopy(machine->mainMemory + physical, buffer + bytes, copy);
+		}		
+		
+		vaddr += copy;
+		size -= copy;
+		bytes += copy;
+	}	
+	
+	return bytes;
+}
+
 #endif
 
 #ifdef NETWORK

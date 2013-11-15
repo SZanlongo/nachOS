@@ -28,9 +28,9 @@ int ProcessManager::NextPID() {
 	}
 }
 
-void *ProcessManager::Remove(int pcb) {
-	return pcbList->Remove(pcb);
-}
+//void *ProcessManager::Remove(int pcb) {
+//	return pcbList->Remove(pcb);
+//}
 
 void *ProcessManager::DeletePID(int pid) {
 	if (PIDsUsed > 0) {
