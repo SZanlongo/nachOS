@@ -13,6 +13,7 @@
 #ifndef SYSCALLS_H
 #define SYSCALLS_H
 
+
 #include "copyright.h"
 
 /* system call codes -- used by the stubs to tell the kernel which system call
@@ -29,6 +30,7 @@
 #define SC_Close	8
 #define SC_Fork		9
 #define SC_Yield	10
+#define SC_Kill         11
 
 #ifndef IN_ASM
 
@@ -41,6 +43,8 @@
  * are then invoked in the Nachos kernel, after appropriate error checking, 
  * from the system call entry point in exception.cc.
  */
+
+
 
 /* Stop Nachos, and print out performance stats */
 void Halt();		
@@ -63,6 +67,9 @@ SpaceId Exec(char *name);
  * Return the exit status.
  */
 int Join(SpaceId id); 	
+
+//adding Kill function
+int Kill(int id);
  
 
 /* File system operations: Create, Open, Read, Write, Close
@@ -117,7 +124,7 @@ void Close(OpenFileId id);
 /* Fork a thread to run a procedure ("func") in the *same* address space 
  * as the current thread.
  */
-void Fork(void (*func)());
+int Fork(void (*func)());
 
 /* Yield the CPU to another runnable thread, whether in this address space 
  * or not. 

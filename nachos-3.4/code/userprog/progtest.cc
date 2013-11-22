@@ -23,15 +23,28 @@
 void
 StartProcess(char *filename)
 {
-    OpenFile *executable = fileSystem->Open(filename);
-    AddrSpace *space;
 
+    //printf("got in start process in progtest.cc\n");
+    OpenFile *executable = fileSystem->Open(filename);
+
+
+    AddrSpace *space;
     if (executable == NULL) {
 	printf("Unable to open file %s\n", filename);
 	return;
     }
+
+    //printf("before creating a new space\n");
     space = new AddrSpace(executable);    
+    //printf("created space in progtest.cc\n");
+
+    if(!space->check())
+    {
+	return;
+    }
+
     currentThread->space = space;
+    space->getPCB()->setThread(currentThread);
 
     delete executable;			// close file
 

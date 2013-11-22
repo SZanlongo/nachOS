@@ -236,6 +236,13 @@ List::SortedRemove(int *keyPtr)
     return thing;
 }
 
-ListElement *List::GetFirst () {
-	return first;
-} 	
+//External code
+void*
+List:: Top()
+{
+    if(IsEmpty())
+	return NULL;
+
+    return first->item;
+}
+//end of External code

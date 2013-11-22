@@ -59,35 +59,10 @@ extern int testnum;
 
 // External functions used by this file
 
-extern void ThreadTest(int numberOfThreads), Copy(char *unixFile, char *nachosFile);
+extern void ThreadTest(void), Copy(char *unixFile, char *nachosFile);
 extern void Print(char *file), PerformanceTest(void);
 extern void StartProcess(char *file), ConsoleTest(char *in, char *out);
 extern void MailTest(int networkID);
-
-#ifdef HW1_Elevator
-Lock* elevatorIsActiveLock = new Lock("elevatorIsActiveLock");
-bool elevatorIsActive;
-int numFloor; 
-void Elevator(int numFloors) {
-
-elevatorIsActiveLock->Acquire();
-bool elevatorIsActive = true;
-elevatorIsActiveLock->Release();
-
-}
-
-void ArrivingGoingFromTo(int atFloor, int toFloor) {
-
-elevatorIsActiveLock->Acquire();
-if (!elevatorIsActive){
-    Thread* elevatorThread = new Thread("Elevator Thread");
-    elevatorThread->Fork((void*)Elevator,numFloor); 
-    elevatorIsActive = true;
-}
-elevatorIsActiveLock->Release();
-
-}
-#endif
 
 //----------------------------------------------------------------------
 // main
@@ -106,7 +81,6 @@ elevatorIsActiveLock->Release();
 int
 main(int argc, char **argv)
 {
-
     int argCount;			// the number of arguments 
 					// for a particular command
 
@@ -127,7 +101,7 @@ main(int argc, char **argv)
       }
     }
 
-    ThreadTest(4);
+    ThreadTest();
 #endif
 
     for (argc--, argv++; argc > 0; argc -= argCount, argv += argCount) {

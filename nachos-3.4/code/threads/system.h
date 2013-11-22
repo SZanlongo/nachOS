@@ -33,13 +33,18 @@ extern Timer *timer;				// the hardware alarm clock
 #include "machine.h"
 extern Machine* machine;	// user program memory and registers
 
-#include "sysopenfile.h"
-#include "filemanager.h"
+//CHANGED
+#include "../userprog/memMan.h"
+#include "../userprog/pid.h"
+#include "../threads/synch.h"
+#include "../userprog/pcbManager.h"
+class pcbManager;
 
-#define READ 0
-#define WRITE 1
-extern FileManager *fileManager;
-int ReadWrite (int vaddr, char *buffer, int size, int which);
+extern memMan *mans_man;
+extern pid *pid_manager;
+extern Lock *memLock;
+extern pcbManager *pcbMan;
+//end changed
 
 #endif
 
@@ -59,4 +64,3 @@ extern PostOffice* postOffice;
 #endif
 
 #endif // SYSTEM_H
-

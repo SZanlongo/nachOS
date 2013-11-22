@@ -30,6 +30,7 @@
 Scheduler::Scheduler()
 { 
     readyList = new List; 
+    killThread = NULL;
 } 
 
 //----------------------------------------------------------------------
@@ -73,6 +74,50 @@ Scheduler::FindNextToRun ()
     return (Thread *)readyList->Remove();
 }
 
+//External added code
+//
+//Remove a thread from the scheduler and put them back in order
+void 
+Scheduler::RemoveThisThread(Thread* input)
+{
+    Thread* temp;
+    Thread* first;
+    bool fix = true;
+    bool done=false;
+
+
+    if((Thread*)readyList->Top() != input) 
+    {
+    	first = (Thread *)readyList->Top();
+    }
+    else
+    {
+	fix = false;
+	done = true;
+    	temp = (Thread *)readyList->Remove();
+	//delete temp;
+    }
+
+    //remove the input thread
+    if(done == false)
+    {
+    	temp = (Thread *)readyList->Remove();
+    	while(temp != input)
+    	{
+    		readyList->Append((void *)temp);
+    		temp = (Thread *)readyList->Remove();
+    	}
+	//delete temp;
+   	 //make sure list is back in the right order
+    	while(((Thread*)readyList->Top() != first) && (fix == true))
+    	{
+    		temp = (Thread *)readyList->Remove();
+    		readyList->Append((void *)temp);
+    	}
+    }
+}
+//end of External added code
+
 //----------------------------------------------------------------------
 // Scheduler::Run
 // 	Dispatch the CPU to nextThread.  Save the state of the old thread,
@@ -86,6 +131,13 @@ Scheduler::FindNextToRun ()
 //
 //	"nextThread" is the thread to be put into the CPU.
 //----------------------------------------------------------------------
+
+//added this function that makes run delete this thread
+void
+Scheduler:: setThreadDestroy(Thread * input)
+{
+    killThread = input;
+}
 
 void
 Scheduler::Run (Thread *nextThread)
@@ -121,10 +173,21 @@ Scheduler::Run (Thread *nextThread)
     // we need to delete its carcass.  Note we cannot delete the thread
     // before now (for example, in Thread::Finish()), because up to this
     // point, we were still running on the old thread's stack!
-    if (threadToBeDestroyed != NULL) {
+    
+    //External changes
+    if(killThread != threadToBeDestroyed && killThread != NULL)
+    {
+	delete killThread;
+	killThread = NULL;
+    } 
+    //end of External changes
+    
+    if (threadToBeDestroyed != NULL) 
+    {
         delete threadToBeDestroyed;
 	threadToBeDestroyed = NULL;
     }
+
     
 #ifdef USER_PROGRAM
     if (currentThread->space != NULL) {		// if there is an address space

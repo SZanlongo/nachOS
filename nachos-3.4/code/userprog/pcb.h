@@ -1,32 +1,50 @@
+#ifndef PCB_H
+#define PCB_H 
+
+#include "../threads/thread.h"
 class Thread;
+
+#include "../threads/synch.h"
 class Lock;
 
-#ifndef PCB_H
-#define PCB_H
 
-#include "thread.h"
-#include "bitmap.h"
-#include "list.h"
+#include "addrspace.h"
+class AddrSpace;
 
-#include "useropenfile.h"
+#include "pcbManager.h"
+class pcbManager;
 
-class PCB {
-	public:
-		PCB(Thread *currentThread, Thread *forkedThread, int nextPID);
-		
-		Thread *parent;
-		Thread *thread;
-		int pid;
-		int exit;
-		
-		List *childList;
-		void *FindChild (int child);
-		
-		UserOpenFile *openFiles[128];
-		int Add(UserOpenFile *uoFile);
-		bool Remove(int fileID);
-		UserOpenFile *Get(int fileID);
-		BitMap *fileMap;
+
+class pcb {
+    public:
+	pcb(Thread *input);
+	~pcb();
+	int  getID();
+	AddrSpace* getAddrSpace();
+	void setAddrSpace(AddrSpace* input);
+	void setParent(pcb * p);
+	void addChild(pcb * c);
+	void removeChild(int idNum);
+	void setThread(Thread *input);
+	bool checkForChild(int id);
+	pcb * getParent();
+	int numberChildren();
+	void setChildExitValue(int input);
+	int getChildExitValue();
+	void setParentsNull();
+	Thread* returnThread();
+
+	
+    private:
+	int MAX_FILES;
+	
+	Thread *processThread;
+	AddrSpace *AdSpace;
+	int processID;
+	pcb * parent_process;
+	pcbManager * children;
+	int numChildren;
+    int childExitValue;	
 };
 
 #endif

@@ -1,47 +1,100 @@
 #include "pcb.h"
+#include "system.h"
 
-PCB::PCB(Thread *currentThread, Thread *forkedThread, int nextPID) {
-    parent = currentThread;
-	thread = forkedThread;
-	pid = nextPID;
-	
-	childList = new List();
+pcb::pcb(Thread *input)
+{
+    int i;
+    
+   processID = pid_manager->getPid();
+    parent_process = NULL;
+    processThread = input;
+    children = new pcbManager();
+    childExitValue=0;
+    MAX_FILES = 21;
+
+
 }
 
-void *PCB::FindChild(int child) {
-	ListElement *element = NULL;	
-    for (element = childList->GetFirst(); element != NULL; element = element->next) {
-		if (element->key == child) {
-			return element->item;
-		}
-	}
-	return NULL;
+pcb:: ~pcb()
+{
+	int i,id;
+        //sets the thread to be destoryed on the next threads run
+	scheduler->setThreadDestroy(processThread);
+
 }
 
-int PCB::Add(UserOpenFile *uoFile) {
-	int index = fileMap->Find();
-	
-	if (index > -1) {
-		openFiles[index] = uoFile;
-	}
-	
-	return index;
+int pcb:: getID()
+{
+    return processID;
 }
 
-UserOpenFile *PCB::Get(int id) {
-	if (fileMap->Test(id)) {
-		return openFiles[id];
-	} else {
-		return NULL;
-	}
+AddrSpace* pcb:: getAddrSpace()
+{
+    return AdSpace;
 }
 
-bool PCB::Remove(int id) {
-	if (fileMap->Test(id)) {
-		delete openFiles[id];
-		fileMap->Clear(id);
-		return true;
-	} else {
-		return false;
-	}
+void pcb:: setAddrSpace(AddrSpace* input)
+{
+    AdSpace = input;
+
+}
+
+void pcb::setParent(pcb * p) 
+{
+    parent_process = p;
+}
+
+pcb * pcb::getParent() 
+{
+    return parent_process;
+}
+
+void pcb::addChild(pcb * c) 
+{
+
+    children->assignPCB(c);
+    numChildren++;
+
+}
+
+void pcb:: removeChild(int idNum)
+{
+    children->removePCB(idNum);
+    numChildren--;
+}
+
+
+void pcb:: setThread(Thread *input)
+{
+    processThread = input;
+}
+
+int pcb:: numberChildren()
+{
+    return numChildren;
+}
+
+bool pcb:: checkForChild(int id)
+{
+    return children->validPID(id);
+}
+
+int pcb:: getChildExitValue()
+{
+    return childExitValue;
+}
+
+void pcb:: setChildExitValue(int input)
+{
+    childExitValue = input;
+}
+
+void pcb:: setParentsNull()
+{
+    children->setParentNull();
+}
+
+Thread* pcb:: returnThread()
+{
+    return processThread;
 }

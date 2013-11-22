@@ -1,4 +1,3 @@
-class AddrSpace;
 // thread.h 
 //	Data structures for managing threads.  A thread represents
 //	sequential execution of code within a program.
@@ -44,6 +43,7 @@ class AddrSpace;
 #ifdef USER_PROGRAM
 #include "machine.h"
 #include "addrspace.h"
+class Addrspace;
 #endif
 
 // CPU register state to be saved on context switch.  
@@ -127,7 +127,7 @@ class Thread {
     void SaveUserState();		// save user-level register state
     void RestoreUserState();		// restore user-level register state
 
-    AddrSpace *space;			// User code this thread is running.
+    class AddrSpace *space;			// User code this thread is running.
 #endif
 };
 
