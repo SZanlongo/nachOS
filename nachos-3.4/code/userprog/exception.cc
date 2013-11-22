@@ -104,6 +104,10 @@ ExceptionHandler(ExceptionType which)
 	syscallKill();
 	updateCounter();
     }
+	else if((which == PageFaultException)
+	{
+	
+	}
     else 
     {
 	printf("Unexpected user mode exception %d %d\n", which, type);
