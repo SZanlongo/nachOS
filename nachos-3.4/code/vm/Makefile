@@ -47,14 +47,12 @@ main.o: ../threads/main.cc ../threads/copyright.h ../threads/utility.h \
   ../threads/utility.h ../userprog/pcb.h ../userprog/../threads/thread.h \
   ../userprog/../threads/synch.h ../userprog/../threads/copyright.h \
   ../userprog/../threads/thread.h ../userprog/../threads/list.h \
-  ../userprog/../threads/utility.h  \
-  ../userprog/addrspace.h ../userprog/pcbManager.h ../threads/scheduler.h \
-  ../threads/list.h ../machine/interrupt.h ../threads/list.h \
-  ../machine/stats.h ../machine/timer.h ../threads/../userprog/memMan.h \
-  ../machine/machine.h ../threads/../userprog/pid.h \
-  ../threads/../threads/synch.h ../threads/../userprog/pcbManager.h \
-   \
-  ../threads/system.h ../filesys/filesys.h
+  ../userprog/../threads/utility.h ../userprog/addrspace.h \
+  ../userprog/pcbManager.h ../threads/scheduler.h ../threads/list.h \
+  ../machine/interrupt.h ../threads/list.h ../machine/stats.h \
+  ../machine/timer.h ../threads/../userprog/memMan.h ../machine/machine.h \
+  ../threads/../userprog/pid.h ../threads/../threads/synch.h \
+  ../threads/../userprog/pcbManager.h ../filesys/filesys.h
 list.o: ../threads/list.cc ../threads/copyright.h ../threads/list.h \
   ../threads/utility.h ../machine/sysdep.h ../threads/copyright.h \
   /usr/include/stdio.h /usr/include/features.h /usr/include/sys/cdefs.h \
@@ -84,14 +82,11 @@ scheduler.o: ../threads/scheduler.cc ../threads/copyright.h \
   ../userprog/pcb.h ../userprog/../threads/thread.h \
   ../userprog/../threads/synch.h ../userprog/../threads/copyright.h \
   ../userprog/../threads/thread.h ../userprog/../threads/list.h \
-   ../userprog/addrspace.h \
-  ../userprog/pcbManager.h ../threads/system.h ../machine/interrupt.h \
-  ../threads/list.h ../machine/stats.h ../machine/timer.h \
-  ../threads/../userprog/memMan.h ../machine/machine.h \
+  ../userprog/addrspace.h ../userprog/pcbManager.h ../threads/system.h \
+  ../machine/interrupt.h ../threads/list.h ../machine/stats.h \
+  ../machine/timer.h ../threads/../userprog/memMan.h ../machine/machine.h \
   ../threads/../userprog/pid.h ../threads/../threads/synch.h \
-  ../threads/../userprog/pcbManager.h \
-   \
-  ../threads/system.h ../filesys/filesys.h
+  ../threads/../userprog/pcbManager.h ../filesys/filesys.h
 synch.o: ../threads/synch.cc ../threads/copyright.h ../threads/synch.h \
   ../threads/thread.h ../threads/utility.h ../machine/sysdep.h \
   ../threads/copyright.h /usr/include/stdio.h /usr/include/features.h \
@@ -107,14 +102,12 @@ synch.o: ../threads/synch.cc ../threads/copyright.h ../threads/synch.h \
   ../threads/copyright.h ../filesys/filesys.h ../threads/copyright.h \
   ../filesys/openfile.h ../threads/utility.h ../userprog/pcb.h \
   ../userprog/../threads/thread.h ../userprog/../threads/synch.h \
-   ../userprog/addrspace.h \
-  ../userprog/pcbManager.h ../threads/list.h ../threads/system.h \
-  ../threads/scheduler.h ../machine/interrupt.h ../threads/list.h \
-  ../machine/stats.h ../machine/timer.h ../threads/../userprog/memMan.h \
-  ../machine/machine.h ../threads/../userprog/pid.h \
-  ../threads/../threads/synch.h ../threads/../userprog/pcbManager.h \
-   \
-  ../threads/system.h ../filesys/filesys.h
+  ../userprog/addrspace.h ../userprog/pcbManager.h ../threads/list.h \
+  ../threads/system.h ../threads/scheduler.h ../machine/interrupt.h \
+  ../threads/list.h ../machine/stats.h ../machine/timer.h \
+  ../threads/../userprog/memMan.h ../machine/machine.h \
+  ../threads/../userprog/pid.h ../threads/../threads/synch.h \
+  ../threads/../userprog/pcbManager.h ../filesys/filesys.h
 synchlist.o: ../threads/synchlist.cc ../threads/copyright.h \
   ../threads/synchlist.h ../threads/list.h ../threads/utility.h \
   ../machine/sysdep.h ../threads/copyright.h /usr/include/stdio.h \
@@ -131,8 +124,8 @@ synchlist.o: ../threads/synchlist.cc ../threads/copyright.h \
   ../machine/disk.h ../userprog/addrspace.h ../threads/copyright.h \
   ../filesys/filesys.h ../threads/copyright.h ../filesys/openfile.h \
   ../threads/utility.h ../userprog/pcb.h ../userprog/../threads/thread.h \
-  ../userprog/../threads/synch.h  \
-  ../userprog/addrspace.h ../userprog/pcbManager.h
+  ../userprog/../threads/synch.h ../userprog/addrspace.h \
+  ../userprog/pcbManager.h
 system.o: ../threads/system.cc ../threads/copyright.h ../threads/system.h \
   ../threads/utility.h ../machine/sysdep.h ../threads/copyright.h \
   /usr/include/stdio.h /usr/include/features.h /usr/include/sys/cdefs.h \
@@ -150,14 +143,12 @@ system.o: ../threads/system.cc ../threads/copyright.h ../threads/system.h \
   ../userprog/pcb.h ../userprog/../threads/thread.h \
   ../userprog/../threads/synch.h ../userprog/../threads/copyright.h \
   ../userprog/../threads/thread.h ../userprog/../threads/list.h \
-  ../userprog/../threads/utility.h  \
-  ../userprog/addrspace.h ../userprog/pcbManager.h ../threads/scheduler.h \
-  ../threads/list.h ../machine/interrupt.h ../threads/list.h \
-  ../machine/stats.h ../machine/timer.h ../threads/../userprog/memMan.h \
-  ../machine/machine.h ../threads/../userprog/pid.h \
-  ../threads/../threads/synch.h ../threads/../userprog/pcbManager.h \
-   \
-  ../threads/system.h ../filesys/filesys.h
+  ../userprog/../threads/utility.h ../userprog/addrspace.h \
+  ../userprog/pcbManager.h ../threads/scheduler.h ../threads/list.h \
+  ../machine/interrupt.h ../threads/list.h ../machine/stats.h \
+  ../machine/timer.h ../threads/../userprog/memMan.h ../machine/machine.h \
+  ../threads/../userprog/pid.h ../threads/../threads/synch.h \
+  ../threads/../userprog/pcbManager.h ../filesys/filesys.h
 thread.o: ../threads/thread.cc ../threads/copyright.h ../threads/thread.h \
   ../threads/utility.h ../machine/sysdep.h ../threads/copyright.h \
   /usr/include/stdio.h /usr/include/features.h /usr/include/sys/cdefs.h \
@@ -175,15 +166,13 @@ thread.o: ../threads/thread.cc ../threads/copyright.h ../threads/thread.h \
   ../userprog/../threads/thread.h ../userprog/../threads/synch.h \
   ../userprog/../threads/copyright.h ../userprog/../threads/thread.h \
   ../userprog/../threads/list.h ../userprog/../threads/utility.h \
-   ../userprog/addrspace.h \
-  ../userprog/pcbManager.h ../threads/switch.h ../threads/synch.h \
-  ../threads/system.h ../threads/scheduler.h ../threads/list.h \
-  ../machine/interrupt.h ../threads/list.h ../machine/stats.h \
-  ../machine/timer.h ../threads/../userprog/memMan.h ../machine/machine.h \
-  ../threads/../userprog/pid.h ../threads/../threads/synch.h \
-  ../threads/../userprog/pcbManager.h \
-   \
-  ../threads/system.h ../filesys/filesys.h
+  ../userprog/addrspace.h ../userprog/pcbManager.h ../threads/switch.h \
+  ../threads/synch.h ../threads/system.h ../threads/scheduler.h \
+  ../threads/list.h ../machine/interrupt.h ../threads/list.h \
+  ../machine/stats.h ../machine/timer.h ../threads/../userprog/memMan.h \
+  ../machine/machine.h ../threads/../userprog/pid.h \
+  ../threads/../threads/synch.h ../threads/../userprog/pcbManager.h \
+  ../filesys/filesys.h
 utility.o: ../threads/utility.cc ../threads/copyright.h \
   ../threads/utility.h ../machine/sysdep.h ../threads/copyright.h \
   /usr/include/stdio.h /usr/include/features.h /usr/include/sys/cdefs.h \
@@ -212,14 +201,12 @@ threadtest.o: ../threads/threadtest.cc ../threads/copyright.h \
   ../userprog/pcb.h ../userprog/../threads/thread.h \
   ../userprog/../threads/synch.h ../userprog/../threads/copyright.h \
   ../userprog/../threads/thread.h ../userprog/../threads/list.h \
-  ../userprog/../threads/utility.h  \
-  ../userprog/addrspace.h ../userprog/pcbManager.h ../threads/scheduler.h \
-  ../threads/list.h ../machine/interrupt.h ../threads/list.h \
-  ../machine/stats.h ../machine/timer.h ../threads/../userprog/memMan.h \
-  ../machine/machine.h ../threads/../userprog/pid.h \
-  ../threads/../threads/synch.h ../threads/../userprog/pcbManager.h \
-   \
-  ../threads/system.h ../filesys/filesys.h
+  ../userprog/../threads/utility.h ../userprog/addrspace.h \
+  ../userprog/pcbManager.h ../threads/scheduler.h ../threads/list.h \
+  ../machine/interrupt.h ../threads/list.h ../machine/stats.h \
+  ../machine/timer.h ../threads/../userprog/memMan.h ../machine/machine.h \
+  ../threads/../userprog/pid.h ../threads/../threads/synch.h \
+  ../threads/../userprog/pcbManager.h ../filesys/filesys.h
 interrupt.o: ../machine/interrupt.cc ../threads/copyright.h \
   ../machine/interrupt.h ../threads/list.h ../threads/copyright.h \
   ../threads/utility.h ../machine/sysdep.h /usr/include/stdio.h \
@@ -238,14 +225,11 @@ interrupt.o: ../machine/interrupt.cc ../threads/copyright.h \
   ../threads/utility.h ../userprog/pcb.h ../userprog/../threads/thread.h \
   ../userprog/../threads/synch.h ../userprog/../threads/copyright.h \
   ../userprog/../threads/thread.h ../userprog/../threads/list.h \
-   ../userprog/addrspace.h \
-  ../userprog/pcbManager.h ../threads/scheduler.h ../threads/list.h \
-  ../machine/interrupt.h ../machine/stats.h ../machine/timer.h \
-  ../threads/../userprog/memMan.h ../machine/machine.h \
+  ../userprog/addrspace.h ../userprog/pcbManager.h ../threads/scheduler.h \
+  ../threads/list.h ../machine/interrupt.h ../machine/stats.h \
+  ../machine/timer.h ../threads/../userprog/memMan.h ../machine/machine.h \
   ../threads/../userprog/pid.h ../threads/../threads/synch.h \
-  ../threads/../userprog/pcbManager.h \
-   \
-  ../threads/system.h ../filesys/filesys.h
+  ../threads/../userprog/pcbManager.h ../filesys/filesys.h
 sysdep.o: ../machine/sysdep.cc ../threads/copyright.h \
   /usr/include/stdio.h /usr/include/features.h /usr/include/sys/cdefs.h \
   /usr/include/gnu/stubs.h \
@@ -289,14 +273,12 @@ sysdep.o: ../machine/sysdep.cc ../threads/copyright.h \
   ../filesys/openfile.h ../threads/utility.h ../userprog/pcb.h \
   ../userprog/../threads/thread.h ../userprog/../threads/synch.h \
   ../userprog/../threads/copyright.h ../userprog/../threads/thread.h \
-  ../userprog/../threads/list.h  \
-  ../userprog/addrspace.h ../userprog/pcbManager.h ../threads/scheduler.h \
-  ../threads/list.h ../machine/interrupt.h ../machine/stats.h \
-  ../machine/timer.h ../threads/../userprog/memMan.h ../machine/machine.h \
+  ../userprog/../threads/list.h ../userprog/addrspace.h \
+  ../userprog/pcbManager.h ../threads/scheduler.h ../threads/list.h \
+  ../machine/interrupt.h ../machine/stats.h ../machine/timer.h \
+  ../threads/../userprog/memMan.h ../machine/machine.h \
   ../threads/../userprog/pid.h ../threads/../threads/synch.h \
-  ../threads/../userprog/pcbManager.h \
-   \
-  ../threads/system.h ../filesys/filesys.h
+  ../threads/../userprog/pcbManager.h ../filesys/filesys.h
 stats.o: ../machine/stats.cc ../threads/copyright.h ../threads/utility.h \
   ../threads/copyright.h ../machine/sysdep.h /usr/include/stdio.h \
   /usr/include/features.h /usr/include/sys/cdefs.h \
@@ -325,14 +307,12 @@ timer.o: ../machine/timer.cc ../threads/copyright.h ../machine/timer.h \
   ../threads/utility.h ../userprog/pcb.h ../userprog/../threads/thread.h \
   ../userprog/../threads/synch.h ../userprog/../threads/copyright.h \
   ../userprog/../threads/thread.h ../userprog/../threads/list.h \
-  ../userprog/../threads/utility.h  \
-  ../userprog/addrspace.h ../userprog/pcbManager.h ../threads/scheduler.h \
-  ../threads/list.h ../machine/interrupt.h ../threads/list.h \
-  ../machine/stats.h ../machine/timer.h ../threads/../userprog/memMan.h \
-  ../machine/machine.h ../threads/../userprog/pid.h \
-  ../threads/../threads/synch.h ../threads/../userprog/pcbManager.h \
-   \
-  ../threads/system.h ../filesys/filesys.h
+  ../userprog/../threads/utility.h ../userprog/addrspace.h \
+  ../userprog/pcbManager.h ../threads/scheduler.h ../threads/list.h \
+  ../machine/interrupt.h ../threads/list.h ../machine/stats.h \
+  ../machine/timer.h ../threads/../userprog/memMan.h ../machine/machine.h \
+  ../threads/../userprog/pid.h ../threads/../threads/synch.h \
+  ../threads/../userprog/pcbManager.h ../filesys/filesys.h
 addrspace.o: ../userprog/addrspace.cc ../threads/copyright.h \
   ../threads/system.h ../threads/copyright.h ../threads/utility.h \
   ../machine/sysdep.h ../threads/copyright.h /usr/include/stdio.h \
@@ -351,14 +331,12 @@ addrspace.o: ../userprog/addrspace.cc ../threads/copyright.h \
   ../userprog/../threads/thread.h ../userprog/../threads/synch.h \
   ../userprog/../threads/copyright.h ../userprog/../threads/thread.h \
   ../userprog/../threads/list.h ../userprog/../threads/utility.h \
-   ../userprog/addrspace.h \
-  ../userprog/pcbManager.h ../threads/scheduler.h ../threads/list.h \
-  ../machine/interrupt.h ../threads/list.h ../machine/stats.h \
-  ../machine/timer.h ../threads/../userprog/memMan.h ../machine/machine.h \
-  ../threads/../userprog/pid.h ../threads/../threads/synch.h \
-  ../threads/../userprog/pcbManager.h \
-   \
-  ../threads/system.h ../filesys/filesys.h ../bin/noff.h
+  ../userprog/addrspace.h ../userprog/pcbManager.h ../threads/scheduler.h \
+  ../threads/list.h ../machine/interrupt.h ../threads/list.h \
+  ../machine/stats.h ../machine/timer.h ../threads/../userprog/memMan.h \
+  ../machine/machine.h ../threads/../userprog/pid.h \
+  ../threads/../threads/synch.h ../threads/../userprog/pcbManager.h \
+  ../filesys/filesys.h ../bin/noff.h
 bitmap.o: ../userprog/bitmap.cc ../threads/copyright.h \
   ../userprog/bitmap.h ../threads/utility.h ../threads/copyright.h \
   ../machine/sysdep.h ../threads/copyright.h /usr/include/stdio.h \
@@ -390,14 +368,12 @@ exception.o: ../userprog/exception.cc ../threads/copyright.h \
   ../userprog/../threads/thread.h ../userprog/../threads/synch.h \
   ../userprog/../threads/copyright.h ../userprog/../threads/thread.h \
   ../userprog/../threads/list.h ../userprog/../threads/utility.h \
-   ../userprog/addrspace.h \
-  ../userprog/pcbManager.h ../threads/scheduler.h ../threads/list.h \
-  ../machine/interrupt.h ../threads/list.h ../machine/stats.h \
-  ../machine/timer.h ../threads/../userprog/memMan.h ../machine/machine.h \
-  ../threads/../userprog/pid.h ../threads/../threads/synch.h \
-  ../threads/../userprog/pcbManager.h \
-   \
-  ../threads/system.h ../filesys/filesys.h ../userprog/syscall.h
+  ../userprog/addrspace.h ../userprog/pcbManager.h ../threads/scheduler.h \
+  ../threads/list.h ../machine/interrupt.h ../threads/list.h \
+  ../machine/stats.h ../machine/timer.h ../threads/../userprog/memMan.h \
+  ../machine/machine.h ../threads/../userprog/pid.h \
+  ../threads/../threads/synch.h ../threads/../userprog/pcbManager.h \
+  ../filesys/filesys.h ../userprog/syscall.h
 progtest.o: ../userprog/progtest.cc ../threads/copyright.h \
   ../threads/system.h ../threads/copyright.h ../threads/utility.h \
   ../machine/sysdep.h ../threads/copyright.h /usr/include/stdio.h \
@@ -416,15 +392,12 @@ progtest.o: ../userprog/progtest.cc ../threads/copyright.h \
   ../userprog/../threads/thread.h ../userprog/../threads/synch.h \
   ../userprog/../threads/copyright.h ../userprog/../threads/thread.h \
   ../userprog/../threads/list.h ../userprog/../threads/utility.h \
-   ../userprog/addrspace.h \
-  ../userprog/pcbManager.h ../threads/scheduler.h ../threads/list.h \
-  ../machine/interrupt.h ../threads/list.h ../machine/stats.h \
-  ../machine/timer.h ../threads/../userprog/memMan.h ../machine/machine.h \
-  ../threads/../userprog/pid.h ../threads/../threads/synch.h \
-  ../threads/../userprog/pcbManager.h \
-   \
-  ../threads/system.h ../filesys/filesys.h ../machine/console.h \
-  ../threads/synch.h
+  ../userprog/addrspace.h ../userprog/pcbManager.h ../threads/scheduler.h \
+  ../threads/list.h ../machine/interrupt.h ../threads/list.h \
+  ../machine/stats.h ../machine/timer.h ../threads/../userprog/memMan.h \
+  ../machine/machine.h ../threads/../userprog/pid.h \
+  ../threads/../threads/synch.h ../threads/../userprog/pcbManager.h \
+  ../filesys/filesys.h ../machine/console.h ../threads/synch.h
 console.o: ../machine/console.cc ../threads/copyright.h \
   ../machine/console.h ../threads/utility.h ../threads/copyright.h \
   ../machine/sysdep.h /usr/include/stdio.h /usr/include/features.h \
@@ -442,14 +415,12 @@ console.o: ../machine/console.cc ../threads/copyright.h \
   ../threads/utility.h ../userprog/pcb.h ../userprog/../threads/thread.h \
   ../userprog/../threads/synch.h ../userprog/../threads/copyright.h \
   ../userprog/../threads/thread.h ../userprog/../threads/list.h \
-  ../userprog/../threads/utility.h  \
-  ../userprog/addrspace.h ../userprog/pcbManager.h ../threads/scheduler.h \
-  ../threads/list.h ../machine/interrupt.h ../threads/list.h \
-  ../machine/stats.h ../machine/timer.h ../threads/../userprog/memMan.h \
-  ../machine/machine.h ../threads/../userprog/pid.h \
-  ../threads/../threads/synch.h ../threads/../userprog/pcbManager.h \
-   \
-  ../threads/system.h ../filesys/filesys.h
+  ../userprog/../threads/utility.h ../userprog/addrspace.h \
+  ../userprog/pcbManager.h ../threads/scheduler.h ../threads/list.h \
+  ../machine/interrupt.h ../threads/list.h ../machine/stats.h \
+  ../machine/timer.h ../threads/../userprog/memMan.h ../machine/machine.h \
+  ../threads/../userprog/pid.h ../threads/../threads/synch.h \
+  ../threads/../userprog/pcbManager.h ../filesys/filesys.h
 machine.o: ../machine/machine.cc ../threads/copyright.h \
   ../machine/machine.h ../threads/utility.h ../threads/copyright.h \
   ../machine/sysdep.h /usr/include/stdio.h /usr/include/features.h \
@@ -467,14 +438,12 @@ machine.o: ../machine/machine.cc ../threads/copyright.h \
   ../threads/utility.h ../userprog/pcb.h ../userprog/../threads/thread.h \
   ../userprog/../threads/synch.h ../userprog/../threads/copyright.h \
   ../userprog/../threads/thread.h ../userprog/../threads/list.h \
-  ../userprog/../threads/utility.h  \
-  ../userprog/addrspace.h ../userprog/pcbManager.h ../threads/scheduler.h \
-  ../threads/list.h ../machine/interrupt.h ../threads/list.h \
-  ../machine/stats.h ../machine/timer.h ../threads/../userprog/memMan.h \
-  ../machine/machine.h ../threads/../userprog/pid.h \
-  ../threads/../threads/synch.h ../threads/../userprog/pcbManager.h \
-   \
-  ../threads/system.h ../filesys/filesys.h
+  ../userprog/../threads/utility.h ../userprog/addrspace.h \
+  ../userprog/pcbManager.h ../threads/scheduler.h ../threads/list.h \
+  ../machine/interrupt.h ../threads/list.h ../machine/stats.h \
+  ../machine/timer.h ../threads/../userprog/memMan.h ../machine/machine.h \
+  ../threads/../userprog/pid.h ../threads/../threads/synch.h \
+  ../threads/../userprog/pcbManager.h ../filesys/filesys.h
 mipssim.o: ../machine/mipssim.cc ../threads/copyright.h \
   ../machine/machine.h ../threads/utility.h ../threads/copyright.h \
   ../machine/sysdep.h /usr/include/stdio.h /usr/include/features.h \
@@ -493,14 +462,12 @@ mipssim.o: ../machine/mipssim.cc ../threads/copyright.h \
   ../userprog/../threads/thread.h ../userprog/../threads/synch.h \
   ../userprog/../threads/copyright.h ../userprog/../threads/thread.h \
   ../userprog/../threads/list.h ../userprog/../threads/utility.h \
-   ../userprog/addrspace.h \
-  ../userprog/pcbManager.h ../threads/scheduler.h ../threads/list.h \
-  ../machine/interrupt.h ../threads/list.h ../machine/stats.h \
-  ../machine/timer.h ../threads/../userprog/memMan.h ../machine/machine.h \
-  ../threads/../userprog/pid.h ../threads/../threads/synch.h \
-  ../threads/../userprog/pcbManager.h \
-   \
-  ../threads/system.h ../filesys/filesys.h
+  ../userprog/addrspace.h ../userprog/pcbManager.h ../threads/scheduler.h \
+  ../threads/list.h ../machine/interrupt.h ../threads/list.h \
+  ../machine/stats.h ../machine/timer.h ../threads/../userprog/memMan.h \
+  ../machine/machine.h ../threads/../userprog/pid.h \
+  ../threads/../threads/synch.h ../threads/../userprog/pcbManager.h \
+  ../filesys/filesys.h
 translate.o: ../machine/translate.cc ../threads/copyright.h \
   ../machine/machine.h ../threads/utility.h ../threads/copyright.h \
   ../machine/sysdep.h /usr/include/stdio.h /usr/include/features.h \
@@ -518,16 +485,14 @@ translate.o: ../machine/translate.cc ../threads/copyright.h \
   ../userprog/../threads/copyright.h ../userprog/../threads/utility.h \
   ../machine/machine.h ../userprog/addrspace.h \
   ../userprog/../threads/synch.h ../userprog/../threads/thread.h \
-  ../userprog/../threads/list.h  \
-  ../userprog/addrspace.h ../userprog/pcbManager.h ../threads/system.h \
-  ../threads/utility.h ../threads/thread.h ../threads/scheduler.h \
-  ../threads/list.h ../machine/interrupt.h ../threads/list.h \
-  ../machine/stats.h ../machine/timer.h ../machine/machine.h \
-  ../threads/../userprog/memMan.h ../machine/machine.h \
-  ../threads/../userprog/pid.h ../threads/../threads/synch.h \
-  ../threads/../userprog/pcbManager.h \
-   \
-  ../threads/system.h ../filesys/filesys.h
+  ../userprog/../threads/list.h ../userprog/addrspace.h \
+  ../userprog/pcbManager.h ../threads/system.h ../threads/utility.h \
+  ../threads/thread.h ../threads/scheduler.h ../threads/list.h \
+  ../machine/interrupt.h ../threads/list.h ../machine/stats.h \
+  ../machine/timer.h ../machine/machine.h ../threads/../userprog/memMan.h \
+  ../machine/machine.h ../threads/../userprog/pid.h \
+  ../threads/../threads/synch.h ../threads/../userprog/pcbManager.h \
+  ../filesys/filesys.h
 pid.o: ../userprog/pid.cc ../userprog/pid.h
 memMan.o: ../userprog/memMan.cc ../userprog/memMan.h ../machine/machine.h \
   ../threads/copyright.h ../threads/utility.h ../threads/copyright.h \
@@ -556,43 +521,14 @@ pcb.o: ../userprog/pcb.cc ../userprog/pcb.h \
   ../threads/copyright.h ../filesys/filesys.h ../threads/copyright.h \
   ../filesys/openfile.h ../threads/utility.h \
   ../userprog/../threads/synch.h ../userprog/../threads/thread.h \
-  ../userprog/../threads/list.h  \
-  ../userprog/addrspace.h ../userprog/pcbManager.h ../threads/system.h \
-  ../threads/copyright.h ../threads/utility.h ../threads/thread.h \
-  ../threads/scheduler.h ../threads/list.h ../machine/interrupt.h \
-  ../threads/list.h ../machine/stats.h ../machine/timer.h \
-  ../machine/machine.h ../threads/../userprog/memMan.h \
-  ../machine/machine.h ../threads/../userprog/pid.h \
-  ../threads/../threads/synch.h ../threads/../userprog/pcbManager.h \
-   \
-  ../threads/system.h ../filesys/filesys.h
-procOFile.o: ../userprog/procOFile.cc 
-sysOFile.o: ../userprog/sysOFile.cc ../userprog/sysOFile.h \
-  ../threads/system.h ../threads/copyright.h ../threads/utility.h \
-  ../machine/sysdep.h ../threads/copyright.h /usr/include/stdio.h \
-  /usr/include/features.h /usr/include/sys/cdefs.h \
-  /usr/include/gnu/stubs.h \
-  /usr/lib/gcc/i386-redhat-linux/3.4.6/include/stddef.h \
-  /usr/include/bits/types.h /usr/include/bits/wordsize.h \
-  /usr/include/bits/typesizes.h /usr/include/libio.h \
-  /usr/include/_G_config.h /usr/include/wchar.h /usr/include/bits/wchar.h \
-  /usr/include/gconv.h ../threads/stdarg.h /usr/include/bits/stdio_lim.h \
-  /usr/include/bits/sys_errlist.h /usr/include/string.h \
-  /usr/include/xlocale.h ../threads/thread.h ../machine/machine.h \
-  ../threads/utility.h ../machine/translate.h ../machine/disk.h \
-  ../userprog/addrspace.h ../threads/copyright.h ../filesys/filesys.h \
-  ../threads/copyright.h ../filesys/openfile.h ../threads/utility.h \
-  ../userprog/pcb.h ../userprog/../threads/thread.h \
-  ../userprog/../threads/synch.h ../userprog/../threads/copyright.h \
-  ../userprog/../threads/thread.h ../userprog/../threads/list.h \
-  ../userprog/../threads/utility.h  \
-  ../userprog/addrspace.h ../userprog/pcbManager.h ../threads/scheduler.h \
+  ../userprog/../threads/list.h ../userprog/addrspace.h \
+  ../userprog/pcbManager.h ../threads/system.h ../threads/copyright.h \
+  ../threads/utility.h ../threads/thread.h ../threads/scheduler.h \
   ../threads/list.h ../machine/interrupt.h ../threads/list.h \
-  ../machine/stats.h ../machine/timer.h ../threads/../userprog/memMan.h \
-  ../machine/machine.h ../threads/../userprog/pid.h \
-  ../threads/../threads/synch.h ../threads/../userprog/pcbManager.h \
-   \
-  ../threads/system.h ../filesys/filesys.h
+  ../machine/stats.h ../machine/timer.h ../machine/machine.h \
+  ../threads/../userprog/memMan.h ../machine/machine.h \
+  ../threads/../userprog/pid.h ../threads/../threads/synch.h \
+  ../threads/../userprog/pcbManager.h ../filesys/filesys.h
 pcbManager.o: ../userprog/pcbManager.cc ../userprog/pcbManager.h \
   ../userprog/pcb.h ../userprog/../threads/thread.h \
   ../userprog/../threads/copyright.h ../userprog/../threads/utility.h \
@@ -610,8 +546,7 @@ pcbManager.o: ../userprog/pcbManager.cc ../userprog/pcbManager.h \
   ../threads/copyright.h ../filesys/filesys.h ../threads/copyright.h \
   ../filesys/openfile.h ../threads/utility.h \
   ../userprog/../threads/synch.h ../userprog/../threads/thread.h \
-  ../userprog/../threads/list.h  \
-  ../userprog/addrspace.h
+  ../userprog/../threads/list.h ../userprog/addrspace.h
 # DEPENDENCIES MUST END AT END OF FILE
 # IF YOU PUT STUFF HERE IT WILL GO AWAY
 # see make depend above
