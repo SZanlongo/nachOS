@@ -156,7 +156,6 @@ int syscallExec()
     char * fileName = new char[256];
     currentThread->space->getString(fileName, virtualAd);
 
-
     OpenFile *fileRead = fileSystem->Open(fileName); 
     if(fileRead  == NULL) 
     {
@@ -167,6 +166,13 @@ int syscallExec()
     }
     else
     {
+	
+	AddrSpace *space;
+	space = new AddrSpace(fileRead);	
+	
+	Thread *newThread = new Thread("Forked process");
+	int spaceID = pcb->getID();
+	
 	currentThread->space->execThread(fileRead);
 
 	if(currentThread->space->check() == false)
