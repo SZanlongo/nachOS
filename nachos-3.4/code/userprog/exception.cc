@@ -405,5 +405,13 @@ void pageFaultHandler()
 	
 }
 
+void newProcess(int arg)
+{
+	currentThread->space->InitRegisters();
+	currentThread->space->SaveState();
+	currentThread->space->RestoreState();
+	machine->Run();
+}
+
 
 #endif
