@@ -57,6 +57,7 @@ void helpFork(int i);
 int syscallKill();
 void syscallHalt();
 int syscallExec();
+void pageFaultHandler();)
 
 
 #if defined(CHANGED)
@@ -106,7 +107,8 @@ ExceptionHandler(ExceptionType which)
     }
 	else if((which == PageFaultException)
 	{
-	
+	DEBUG('a', "Page Fault.\n");	
+	pageFaultHandler();
 	}
     else 
     {
@@ -394,6 +396,13 @@ int syscallFork()
     machine->WriteRegister(2, tempAd->getPID());
     memLock->Release();
     return tempAd->getPID();
+}
+
+void pageFaultHandler()
+{
+	int faultingVAddr = machine->ReadRegister(BadVAddrReg);
+	VMmanager->PageReplace(faultingVAddr);
+	
 }
 
 
