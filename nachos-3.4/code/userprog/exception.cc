@@ -148,6 +148,10 @@ void updateCounter()
 
 int syscallExec()
 {
+	//initially, the pages of a process are all in the executable file
+	//TODO
+		//need to allocate space in the backing store for the pages in this process
+	
     printf("Syscall Call: [%d] invoked Exec.\n", currentThread->space->getPID());
 
     //get the string an copy to memory of this addrspace
@@ -421,9 +425,26 @@ int syscallFork()
 
 void pageFaultHandler()
 {
-	int faultingVAddr = machine->ReadRegister(BadVAddrReg);
-	VMmanager->PageReplace(faultingVAddr);
+	//page fault occurred
 	
+	int faultingVAddr = machine->ReadRegister(BadVAddrReg);
+	
+	//might not have to implement a vm manager
+	//VMmanager->PageReplace(faultingVAddr);
+	
+	int frameID;
+	frameID = mans_man->allocate();
+	
+	//there are free frames
+	if (frameID >=0)
+	{
+		
+	}
+	//there are no free frames
+	else
+	{
+		
+	}
 }
 
 #endif
