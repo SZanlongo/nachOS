@@ -105,7 +105,7 @@ ExceptionHandler(ExceptionType which)
 	syscallKill();
 	updateCounter();
     }
-	else if((which == PageFaultException)
+	else if((which == PageFaultException))
 	{
 	DEBUG('a', "Page Fault.\n");	
 	pageFaultHandler();
@@ -174,7 +174,7 @@ int syscallExec()
 	
 	//Thread *newThread = new Thread("Forked process");
 	
-	int spaceID = pcb->getID();
+	int spaceID = currentThread->space->getPCB()->getParent()->getID();
 	
 	delete fileRead;
 	
@@ -434,16 +434,40 @@ void pageFaultHandler()
 	
 	int frameID;
 	frameID = mans_man->allocate();
+	int virtualPageNumber = faultingVAddr / PageSize;
 	
 	//there are free frames
 	if (frameID >=0)
 	{
+		currentThread->space->pageTable[virtualPageNumber].valid = true;
+		currentThread->space->pageTable[virtualPageNumber].physicalPage = frameID;
+		currentThread->space->pageTable[virtualPageNumber].persisted = false;
 		
+		//add core map to memory manager
+		//lock the io for the frame
+		
+		//read swap file
+		
+		//copy/write data to memory at ...
+		
+		//Whenever a page is loaded into physical memory, print:
+		printf("L [%d]: [%d] -> [%d]\n", currentThread->space->pcb->getPID(), //put core entries here, frameID);
 	}
 	//there are no free frames
 	else
 	{
-		
+		//need core map entries to go further
+		//scan the physical memory for selecting a victim page using FIFO
+		//if necessary
+			//allocate space on the backing store to receive the contents of the victim page
+			//assuming that its dirty and needs flushing
+		//initiate io to write the contents of the victim page to the backing store
+		//adjust the pagetable for the process to which the victim page belongs to reflect that it is no longer in memory
+		//locate the page for which the fault was generated on the backing store
+			//initiate io to load the page into the page frame selected in the previous steps
+		//adjust the pagetable for the faulting process to show the desired path is now in memory
+		//return to user mode
+			//restart the instruction that caused the fault
 	}
 }
 
