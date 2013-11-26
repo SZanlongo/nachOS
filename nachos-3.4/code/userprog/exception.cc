@@ -57,7 +57,7 @@ void helpFork(int i);
 int syscallKill();
 void syscallHalt();
 int syscallExec();
-void pageFaultHandler();)
+void pageFaultHandler();
 
 
 #if defined(CHANGED)
@@ -148,7 +148,6 @@ void updateCounter()
 
 int syscallExec()
 {
-
     printf("Syscall Call: [%d] invoked Exec.\n", currentThread->space->getPID());
 
     //get the string an copy to memory of this addrspace
@@ -165,24 +164,40 @@ int syscallExec()
 	return -1;
     }
     else
-    {
-	
+    {	
 	AddrSpace *space;
 	space = new AddrSpace(fileRead);	
 	
-	Thread *newThread = new Thread("Forked process");
+	//Thread *newThread = new Thread("Forked process");
+	
 	int spaceID = pcb->getID();
 	
-	currentThread->space->execThread(fileRead);
+	delete fileRead;
+	
+	//currentThread->space->execThread(fileRead);
 
-	if(currentThread->space->check() == false)
-	{ 
-	    updateCounter();
-	    return -1; 
-	}
-
+	//if(currentThread->space->check() == false)
+	//{ 
+	//    updateCounter();
+	//    return -1; 
+	//}
+	
 	printf("Exec Program: [%d] loading [%s]\n", currentThread->space->getPID(), fileName);
-	machine->WriteRegister(2,1);
+	
+	if (spaceID >= 0)
+	{
+		machine->WriteRegister(2, spaceID);
+	}
+	else
+	{
+		machine->WriteRegister(2, -1);		
+	}
+	
+	space->InitRegisters();
+	currentThread->space = space;
+	space->RestoreState();
+	machine->Run();
+	
 	return 1;
     }
 }
@@ -410,14 +425,5 @@ void pageFaultHandler()
 	VMmanager->PageReplace(faultingVAddr);
 	
 }
-
-void newProcess(int arg)
-{
-	currentThread->space->InitRegisters();
-	currentThread->space->SaveState();
-	currentThread->space->RestoreState();
-	machine->Run();
-}
-
 
 #endif
