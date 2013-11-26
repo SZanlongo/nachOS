@@ -7,6 +7,8 @@ memMan:: memMan()
     { 
 	mem[i]=false;
     }
+	
+	coreMap = new CoreMap[32];
 }
 
 int memMan:: allocate()
