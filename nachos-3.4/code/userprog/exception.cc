@@ -425,13 +425,14 @@ int syscallFork()
 
 void pageFaultHandler()
 {
-	//page fault occurred
-	
+	//page fault occurred	
 	int faultingVAddr = machine->ReadRegister(BadVAddrReg);
 	OpenFile *openFile = fileSystem->Open(currentThread->space->swap);
 	
 	//might not have to implement a vm manager
 	//VMmanager->PageReplace(faultingVAddr);
+	
+	//so memory manager was replaces by a mans man ‎ಠ_ಠ
 	
 	int frameID;
 	frameID = mans_man->allocate();
@@ -468,16 +469,52 @@ void pageFaultHandler()
 	//there are no free frames
 	else
 	{
-		//need core map entries to go further
 		//scan the physical memory for selecting a victim page using FIFO
+		while(mans_man->coreMap[mans_man->replace++].locked)
+		{
+			mans_man->replace = mans_man->replace % mans_man->pageCount;
+		}
+		
+		CoreMap *coreMap = &mans_man->coreMap[mans_man->replace];
+		
+		coreMap->addrSpace->pageTable[coreMap->virtualPageNumber].persist = true;
+		coreMap->addrSpace->pageTable[coreMap->virtualPageNumber].valid = false;
+		
+		currentThread->space->pageTable[virtualPageNumber].valid = true;
+		int physical = coreMap->addrSpace->pageTable[coreMap->virtualPageNumber].physicalPage;
+		currentThread->space->pageTable[virtualPageNumber].physicalPage = physical;
+		
 		//if necessary
 			//allocate space on the backing store to receive the contents of the victim page
 			//assuming that its dirty and needs flushing
+		
+		if(coreMap->addrSpace->pageTable[coreMap->virtualPageNumber].dirty)
+		{
+			//whenever a page is evicted from physical memory and written to the swap area, print:
+			printf("S [%d]: [%d]\n", coreMap->addrSpace->getPID(), mans_man->replace);
+		}
+		else
+		{
+			//whenever a page is evicted from physical memory and NOT written to the swap area, print:
+			printf("E [%d]: [%d]\n", coreMap->addrSpace->getPID(), mans_man->replace);
+		}
+		
 		//initiate io to write the contents of the victim page to the backing store
+		
+		
 		//adjust the pagetable for the process to which the victim page belongs to reflect that it is no longer in memory
+		
+		
 		//locate the page for which the fault was generated on the backing store
 			//initiate io to load the page into the page frame selected in the previous steps
+		
+		int vp = mans_man->coreMap[frameID].virtualPageNumber;
+		int pp = mans_man->replace;
+		printf("L [%d]: [%d] -> [%d]\n", currentThread->space->getPID(), vp, pp);
+		
 		//adjust the pagetable for the faulting process to show the desired path is now in memory
+		
+		
 		//return to user mode
 			//restart the instruction that caused the fault
 	}

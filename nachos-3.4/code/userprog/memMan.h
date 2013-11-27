@@ -20,6 +20,8 @@ class memMan
 	void deallocate(int pageNum);
 	int getPages();
 	CoreMap *coreMap;
+	int replace;
+	int pageCount;
  
     private:
     	bool mem[32];
