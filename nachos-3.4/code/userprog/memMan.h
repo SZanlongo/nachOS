@@ -1,4 +1,7 @@
 #include "machine.h"
+
+class AddrSpace;
+
 class CoreMap
 {
 	public:

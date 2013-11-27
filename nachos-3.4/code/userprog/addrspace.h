@@ -53,16 +53,17 @@ class AddrSpace {
     void getString(char * str, int virtAd);
     void execThread(OpenFile * executable);
     unsigned int myTranslate(int virtAddr);
+	char swap[16];
+	TranslationEntry *pageTable;	// Assume linear page table translation
+					// for now!
 
   private:
-    bool worked;
-    TranslationEntry *pageTable;	// Assume linear page table translation
-					// for now!
+    bool worked;    
     unsigned int numPages;		// Number of pages in the virtual 
 					// address space
     int pageIndex;
     pcb* thisPCB;
-    int regArray[NumTotalRegs];
+    int regArray[NumTotalRegs];	
 };
 
 #endif // ADDRSPACE_H

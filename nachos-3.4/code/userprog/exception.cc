@@ -428,6 +428,7 @@ void pageFaultHandler()
 	//page fault occurred
 	
 	int faultingVAddr = machine->ReadRegister(BadVAddrReg);
+	OpenFile *openFile = fileSystem->Open(currentThread->space->swap);
 	
 	//might not have to implement a vm manager
 	//VMmanager->PageReplace(faultingVAddr);
@@ -435,23 +436,34 @@ void pageFaultHandler()
 	int frameID;
 	frameID = mans_man->allocate();
 	int virtualPageNumber = faultingVAddr / PageSize;
+	char buffer[PageSize];
 	
 	//there are free frames
 	if (frameID >=0)
 	{
 		currentThread->space->pageTable[virtualPageNumber].valid = true;
 		currentThread->space->pageTable[virtualPageNumber].physicalPage = frameID;
-		currentThread->space->pageTable[virtualPageNumber].persisted = false;
+		currentThread->space->pageTable[virtualPageNumber].persist = false;		
 		
-		//add core map to memory manager
 		//lock the io for the frame
+		mans_man->coreMap[frameID].locked = true;
+		
+		//zero out
+		bzero(machine->mainMemory + currentThread->space->pageTable[virtualPageNumber].physicalPage * PageSize, PageSize);
+		
+		mans_man->coreMap[frameID].virtualPageNumber = currentThread->space->pageTable[virtualPageNumber].virtualPage;
+		mans_man->coreMap[frameID].addrSpace = currentThread->space;
 		
 		//read swap file
+		//int swapFile = swap->ReadAt(buffer, PageSize, currentThread->space->//disk location of badvirtaddr);
 		
 		//copy/write data to memory at ...
+		bcopy(buffer, &machine->mainMemory[PageSize], frameID * PageSize);
+		
+		mans_man->coreMap[frameID].locked = false;
 		
 		//Whenever a page is loaded into physical memory, print:
-		printf("L [%d]: [%d] -> [%d]\n", currentThread->space->pcb->getPID(), //put core entries here, frameID);
+		printf("L [%d]: [%d] -> [%d]\n", currentThread->space->getPID(), mans_man->coreMap[frameID].virtualPageNumber, frameID);
 	}
 	//there are no free frames
 	else
