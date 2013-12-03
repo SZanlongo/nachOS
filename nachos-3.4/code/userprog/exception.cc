@@ -409,9 +409,9 @@ int syscallFork()
     tempAd->SaveReg();
     t->Fork(helpFork,1);
 
-    machine->WriteRegister(PCReg, oldPC); 
-    machine->WriteRegister(PrevPCReg, oldPrevPC); 
-    machine->WriteRegister(NextPCReg, oldNextPC); 
+    machine->WriteRegister(PCReg, oldPC);
+    machine->WriteRegister(PrevPCReg, oldPrevPC);
+    machine->WriteRegister(NextPCReg, oldNextPC);
 
     printf("Process [%d] Fork: start at address [0x%x] with [%d] pages memory\n", currentThread->space->getPID(), machine->ReadRegister(4), currentThread->space->getNumPages());
     
